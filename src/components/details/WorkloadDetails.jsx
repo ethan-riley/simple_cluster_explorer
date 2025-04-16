@@ -453,27 +453,6 @@ const WorkloadDetails = ({
     );
   }
   
-  return (
-    <div>
-      {/* Resources table */}
-      <div className="mb-4 overflow-x-auto">
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="px-4 py-2 text-left">Name</th>
-              <th className="px-4 py-2 text-left">Namespace</th>
-              <th className="px-4 py-2 text-left">Status</th>
-              {resourceType !== 'pods' && (
-                <th className="px-4 py-2 text-left">Replicas</th>
-              )}
-              <th className="px-4 py-2 text-left">Age</th>
-              <th className="px-4 py-2 text-left">Labels</th>
-            </tr>
-          </thead>
-        </table>
-      </div>
-    );
-  };
 
   return (
     <div>
