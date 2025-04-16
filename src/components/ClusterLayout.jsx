@@ -174,7 +174,7 @@ const ClusterLayout = () => {
       </aside>
 
       {/* Resource Details (2/3 width) */}
-      <div className="w-100 pl-2 overflow-y-auto">
+      <div className="w-full pl-2 overflow-y-auto">
         {activeResource === 'workloads' && activeSection === 'details' ? (
           <div className="bg-white rounded-lg shadow p-4">
             <h2 className="text-xl font-bold mb-4">Workload Details</h2>
