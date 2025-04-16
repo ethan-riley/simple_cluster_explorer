@@ -141,37 +141,36 @@ const WorkloadDetails = ({
   };
   
   // Render tab content for expanded resource
-  const renderTabContent = () => {
-    const expandedResource = filteredResources.find(r => r.metadata?.name === expandedResourceName);    
-    if (!expandedResource) return null;
+  const renderTabContent = (resource, tab) => {
+    if (!resource) return null;
 
-    switch (selectedTab) {
+    switch (tab) {
       case 'details':
-        return renderDetailsTab();
+        return renderDetailsTab(resource);
       case 'yaml':
-        return renderYamlTab();
+        return renderYamlTab(resource);
       case 'labels':
-        return renderLabelsTab();
+        return renderLabelsTab(resource);
       case 'annotations':
-        return renderAnnotationsTab();
+        return renderAnnotationsTab(resource);
       case 'conditions':
-        return renderConditionsTab();
+        return renderConditionsTab(resource);
       case 'pods':
-        return renderPodsTab();
+        return renderPodsTab(resource);
       case 'events':
-        return renderEventsTab();
+        return renderEventsTab(resource);
       default:
         return (
           <div className="p-4 bg-gray-50 rounded">
-            Information for {selectedTab} is not available at this moment.
+            Information for {tab} is not available at this moment.
           </div>
         );
     }
   };
   
   // Render details tab
-  const renderDetailsTab = () => {
-    const resource = expandedResource;
+  const renderDetailsTab = (resource) => {
+    if (!resource) return null;
     
     // Common details for all workload types
     const commonDetails = [
@@ -283,8 +282,9 @@ const WorkloadDetails = ({
   };
   
   // Render YAML tab
-  const renderYamlTab = () => {
-    const yamlContent = JSON.stringify(expandedResource, null, 2);
+  const renderYamlTab = (resource) => {
+    if (!resource) return null;
+    const yamlContent = JSON.stringify(resource, null, 2);
     
     return (
       <div className="border rounded p-4 bg-gray-50">
@@ -296,8 +296,9 @@ const WorkloadDetails = ({
   };
   
   // Render labels tab
-  const renderLabelsTab = () => {
-    const labels = expandedResource.metadata?.labels || {};
+  const renderLabelsTab = (resource) => {
+    if (!resource) return null;
+    const labels = resource.metadata?.labels || {};
     
     return (
       <div className="border rounded p-4">
@@ -327,8 +328,9 @@ const WorkloadDetails = ({
   };
   
   // Render annotations tab
-  const renderAnnotationsTab = () => {
-    const annotations = expandedResource.metadata?.annotations || {};
+  const renderAnnotationsTab = (resource) => {
+    if (!resource) return null;
+    const annotations = resource.metadata?.annotations || {};
     
     return (
       <div className="border rounded p-4">
@@ -358,8 +360,9 @@ const WorkloadDetails = ({
   };
   
   // Render conditions tab
-  const renderConditionsTab = () => {
-    const conditions = expandedResource.status?.conditions || [];
+  const renderConditionsTab = (resource) => {
+    if (!resource) return null;
+    const conditions = resource.status?.conditions || [];
     
     return (
       <div className="border rounded p-4">
@@ -405,7 +408,9 @@ const WorkloadDetails = ({
   };
   
   // Render pods tab (for non-pod resources)
-  const renderPodsTab = () => {
+  const renderPodsTab = (resource) => {
+    if (!resource) return null;
+    
     // For pods resource type, this tab doesn't make sense
     if (resourceType === 'pods') {
       return (
@@ -425,7 +430,8 @@ const WorkloadDetails = ({
   };
   
   // Render events tab
-  const renderEventsTab = () => {
+  const renderEventsTab = (resource) => {
+    if (!resource) return null;
     // In a real implementation, you would fetch events related to this resource
     return (
       <div className="p-4 bg-gray-50 rounded">
