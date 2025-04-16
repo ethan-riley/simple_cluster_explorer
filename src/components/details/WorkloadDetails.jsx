@@ -351,6 +351,53 @@ const WorkloadDetails = ({
     );
   };
   
+  // Render conditions tab
+  const renderConditionsTab = () => {
+    const conditions = expandedResource.status?.conditions || [];
+    
+    return (
+      <div className="border rounded p-4">
+        <table className="min-w-full">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="text-left py-2 px-4">Type</th>
+              <th className="text-left py-2 px-4">Status</th>
+              <th className="text-left py-2 px-4">Last Transition</th>
+              <th className="text-left py-2 px-4">Reason</th>
+              <th className="text-left py-2 px-4">Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            {conditions.map((condition, index) => (
+              <tr key={index} className="border-b">
+                <td className="py-2 px-4">{condition.type}</td>
+                <td className="py-2 px-4">
+                  <span className={`px-2 py-1 rounded-full text-xs ${
+                    condition.status === 'True' ? 'bg-green-100 text-green-800' : 
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {condition.status}
+                  </span>
+                </td>
+                <td className="py-2 px-4">
+                  {condition.lastTransitionTime ? 
+                    new Date(condition.lastTransitionTime).toLocaleString() : 'N/A'}
+                </td>
+                <td className="py-2 px-4">{condition.reason || 'N/A'}</td>
+                <td className="py-2 px-4">{condition.message || 'N/A'}</td>
+              </tr>
+            ))}
+            {conditions.length === 0 && (
+              <tr>
+                <td colSpan={5} className="py-2 px-4 text-center">No conditions found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+  
   // Render pods tab (for non-pod resources)
   const renderPodsTab = () => {
     // For pods resource type, this tab doesn't make sense
