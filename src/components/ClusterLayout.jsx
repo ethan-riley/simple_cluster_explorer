@@ -18,11 +18,14 @@ const ClusterLayout = () => {
   // Extract resource counts from a snapshot
   const extractResourceCounts = (snapshotData) => {
     if (!snapshotData || !snapshotData.data) return {};
-  
+
     const counts = {};
-    const summary = snapshotData.data;
-  
-    // Directly map resource types to their counts from the summary object
+    const summary = snapshotData.data || {};
+
+    // Safely access resource counts from the summary object
+    // Use optional chaining (?.) to avoid errors if properties are missing
+    // The nullish coalescing operator (??) provides a default value of 0 if a property is null or undefined
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining
     counts.nodes = summary.nodes || 0;
     counts.pods = summary.pods || 0;
     counts.services = summary.services || 0;
@@ -44,9 +47,8 @@ const ClusterLayout = () => {
     counts.roles = summary.roles || 0;
     counts.rolebindings = summary.rolebindings || 0;
     counts.clusterroles = summary.clusterroles || 0;
-    counts.clusterrolebindings = summary.clusterrolebindings || 0;
-    counts.namespaces = summary.namespaces || 0;
-  
+    counts.clusterrolebindings = summary.clusterrolebindings || 0;    counts.namespaces = summary.namespaces ?? 0;
+
     return counts;
   };
   
@@ -74,8 +76,10 @@ const ClusterLayout = () => {
           const directData = await apiService.loadClusterSnapshot(clusterId, region);
           if (directData) {
             const counts = extractResourceCounts(directData);
+
             setResourceCounts(counts);
-            
+
+
             // Extract available namespaces for filters
             if (directData.data && directData.data.namespaceList) {
               const namespaceItems = directData.data.namespaceList.items || [];

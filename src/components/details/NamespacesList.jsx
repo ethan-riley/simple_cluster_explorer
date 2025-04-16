@@ -28,6 +28,8 @@ const NamespacesList = ({
     return searchString.includes(searchTerm.toLowerCase());
   });
   
+  // Render list of namespaces
+  const renderNamespaceList = () => {\n    if (loading) {\n      return <p>Loading namespaces...</p>;\n    }\n    \n    if (filteredResources.length === 0) {\n      return <p>No namespaces found.</p>;\n    }\n    \n    return (\n      <ul>\n        {filteredResources.map(namespace => (\n          <li key={namespace.metadata?.uid} className="mb-2">\n            <div\n              className={\n                `p-4 rounded-lg border cursor-pointer hover:bg-gray-50 ${expandedResource?.metadata?.uid === namespace.metadata?.uid ? 'bg-gray-100' : ''}`\n              }\n              onClick={() => onExpandResource(namespace)}\n            >\n              <h3 className="text-lg font-medium text-gray-900">\n                {namespace.metadata?.name}\n              </h3>\n              <p className="text-sm text-gray-500">\n                Status: {namespace.status?.phase || 'Unknown'}\n              </p>\n            </div>\n            {expandedResource?.metadata?.uid === namespace.metadata?.uid && (\n              <div className="mt-2">\n                <div className="flex space-x-2 border-b">\n                  {tabs.map(tab => (\n                    <button\n                      key={tab}\n                      className={`py-2 px-4 ${selectedTab === tab ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}\n                      onClick={() => onTabChange(tab)}\n                    >\n                      {tab.charAt(0).toUpperCase() + tab.slice(1)}\n                    </button>\n                  ))}\n                </div>\n                {renderTabContent()}\n              </div>\n            )}\n          </li>\n        ))}\n      </ul>\n    );\n  };\n  
   const tabs = ['details', 'yaml', 'labels', 'annotations', 'status'];
   
   // Render tab content for expanded namespace
@@ -221,6 +223,8 @@ const NamespacesList = ({
       </div>
     );
   };
+
+  return renderNamespaceList();
 }
 
 export default NamespacesList;
