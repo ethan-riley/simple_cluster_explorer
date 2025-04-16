@@ -451,7 +451,8 @@ const WorkloadDetails = ({
       );
     }
   
-    <div>
+                        return (
+                    <div>
       {/* Resources table */}
       <div className="mb-4 overflow-x-auto">
         <table className="min-w-full bg-white">
@@ -463,63 +464,56 @@ const WorkloadDetails = ({
             </tr>
           </thead>
           <tbody>
-                      {filteredResources.map(resource => {
-                        const isSelected = selectedWorkload && selectedWorkload.metadata?.uid === resource.metadata?.uid;
-                        return (
-                          <tr
-                            key={resource.metadata?.uid}
-                            className={`hover:bg-gray-50 cursor-pointer ${isSelected ? 'bg-gray-100' : ''}`}
-                            onClick={() => setSelectedWorkload(isSelected ? null : resource)}
-                          >
-                            <td className="px-4 py-2">{resource.metadata?.name || 'N/A'}</td>
-                            <td className="px-4 py-2">{resource.metadata?.namespace || 'N/A'}</td>
-                            <td className="px-4 py-2">
-                              <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(getResourceStatus(resource))}`}>
-                                {getResourceStatus(resource)}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
+            {filteredResources.map(resource => {
+              const isSelected = selectedWorkload && selectedWorkload.metadata?.uid === resource.metadata?.uid;
+              return (
+                <tr
+                  key={resource.metadata?.uid}
+                  className={`hover:bg-gray-50 cursor-pointer ${isSelected ? 'bg-gray-100' : ''}`}
+                  onClick={() => setSelectedWorkload(isSelected ? null : resource)}
+                >
+                  <td className="px-4 py-2">{resource.metadata?.name || 'N/A'}</td>
+                  <td className="px-4 py-2">{resource.metadata?.namespace || 'N/A'}</td>
+                  <td className="px-4 py-2">
+                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(getResourceStatus(resource))}`}>
+                      {getResourceStatus(resource)}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
-      </div>
-
-                {/* Details section (similar to NodeDetails) */}
-                {selectedWorkload && (
-                  <div className="mt-4 bg-white rounded-lg shadow p-4">
-                    <h2 className="text-xl font-bold mb-4">{resourceType.slice(0, -1)} Details</h2>
-                    {/* Tabs */}
-                    <div className="mb-4">
-                      <ul className="flex border-b">
-                        {['YAML', 'Details', 'Containers', 'Volumes', 'Conditions', 'Labels', 'Annotations', 'Owner References', 'Scheduling', 'Tolerations', 'Node Selector'].map(tab => (
-                          <li key={tab} className="-mb-px mr-1">
-                            <a
-                              className={`bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold border-l border-t border-r rounded-t ${selectedTab === tab.toLowerCase() ? 'active' : 'hover:bg-gray-200'}`}
-                              onClick={() => onTabChange(tab.toLowerCase())}
-                            >
-                              {tab}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Tab content */}
-                    <div>
-                      {renderTabContent(selectedWorkload, selectedTab)}
-                    </div>
-                  </div>
-                )}
     </div>
-            // );
-          //};          
-//           </tbody>
-//         </table>
-//       </div>
-//     </div>
 
-//   );
-// };
+      {/* Details section */}
+      {selectedWorkload && (
+        <div className="mt-4 bg-white rounded-lg shadow p-4">
+          <h2 className="text-xl font-bold mb-4">{resourceType.slice(0, -1)} Details</h2>
+          {/* Tabs */}
+          <div className="mb-4">
+            <ul className="flex border-b">
+              {tabs.map(tab => (
+                <li key={tab} className="-mb-px mr-1">
+                  <a
+                    className={`bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold border-l border-t border-r rounded-t ${selectedTab === tab ? 'active' : 'hover:bg-gray-200'}`}
+                    onClick={() => onTabChange(tab)}
+                  >
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Tab content */}
+          <div>
+            {renderTabContent(selectedWorkload, selectedTab)}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
+
 export default WorkloadDetails;
