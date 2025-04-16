@@ -1,4 +1,4 @@
-// src/components/details/WorkloadDetails.jsx
+/// src/components/details/WorkloadDetails.jsx
 import React, { useState } from 'react';
 import WorkloadRow from './WorkloadRow';
 
@@ -308,13 +308,14 @@ const WorkloadDetails = ({
             </tr>
           </thead>
           <tbody>
-            {Object.entries(labels).map(([key, value]) => (
+            {Object.entries(labels).length > 0 ? (
+              Object.entries(labels).map(([key, value]) => (
               <tr key={key} className="border-b">
                 <td className="py-2 px-4">{key}</td>
                 <td className="py-2 px-4">{value}</td>
               </tr>
-            ))}
-            {Object.keys(labels).length === 0 && (
+              ))
+            ) : (
               <tr>
                 <td colSpan={2} className="py-2 px-4 text-center">No labels found</td>
               </tr>
@@ -340,13 +341,14 @@ const WorkloadDetails = ({
             </tr>
           </thead>
           <tbody>
-            {Object.entries(annotations).map(([key, value]) => (
-              <tr key={key} className="border-b">
-                <td className="py-2 px-4">{key}</td>
-                <td className="py-2 px-4">{value}</td>
-              </tr>
-            ))}
-            {Object.keys(annotations).length === 0 && (
+            {Object.entries(annotations).length > 0 ? (
+              Object.entries(annotations).map(([key, value]) => (
+                <tr key={key} className="border-b">
+                  <td className="py-2 px-4">{key}</td>
+                  <td className="py-2 px-4">{value}</td>
+                </tr>
+              ))
+            ) : (
               <tr>
                 <td colSpan={2} className="py-2 px-4 text-center">No annotations found</td>
               </tr>
@@ -362,7 +364,7 @@ const WorkloadDetails = ({
     if (!resource) return null;
     const conditions = resource.status?.conditions || [];
     
-    return (
+      return (
       <div className="border rounded p-4">
         <table className="min-w-full">
           <thead>
@@ -375,40 +377,41 @@ const WorkloadDetails = ({
             </tr>
           </thead>
           <tbody>
-            {conditions.map((condition, index) => (
-              <tr key={index} className="border-b">
-                <td className="py-2 px-4">{condition.type}</td>
-                <td className="py-2 px-4">
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    condition.status === 'True' ? 'bg-green-100 text-green-800' : 
-                    'bg-red-100 text-red-800'
-                  }`}>
-                    {condition.status}
-                  </span>
-                </td>
-                <td className="py-2 px-4">
-                  {condition.lastTransitionTime ? 
-                    new Date(condition.lastTransitionTime).toLocaleString() : 'N/A'}
-                </td>
-                <td className="py-2 px-4">{condition.reason || 'N/A'}</td>
-                <td className="py-2 px-4">{condition.message || 'N/A'}</td>
-              </tr>
-            ))}
-            {conditions.length === 0 && (
+            {conditions.length > 0 ? (
+              conditions.map((condition, index) => (
+                <tr key={index} className="border-b">
+                  <td className="py-2 px-4">{condition.type}</td>
+                  <td className="py-2 px-4">
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      condition.status === 'True' ? 'bg-green-100 text-green-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {condition.status}
+                    </span>
+                  </td>
+                  <td className="py-2 px-4">
+                    {condition.lastTransitionTime ?
+                      new Date(condition.lastTransitionTime).toLocaleString() : 'N/A'}
+                  </td>
+                  <td className="py-2 px-4">{condition.reason || 'N/A'}</td>
+                  <td className="py-2 px-4">{condition.message || 'N/A'}</td>
+                </tr>
+              ))
+            ) : (
               <tr>
                 <td colSpan={5} className="py-2 px-4 text-center">No conditions found</td>
               </tr>
-            )}
+      )}
           </tbody>
         </table>
-      </div>
-    );
-  };
-  
+    </div>
+  );
+};
+
   // Render pods tab (for non-pod resources)
   const renderPodsTab = (resource) => {
     if (!resource) return null;
-    
+
     // For pods resource type, this tab doesn't make sense
     if (resourceType === 'pods') {
       return (
@@ -417,7 +420,7 @@ const WorkloadDetails = ({
         </div>
       );
     }
-    
+
     // In a real implementation, you would fetch the pods related to this resource
     return (
       <div className="p-4 bg-gray-50 rounded">
@@ -426,7 +429,7 @@ const WorkloadDetails = ({
       </div>
     );
   };
-  
+
   // Render events tab
   const renderEventsTab = (resource) => {
     if (!resource) return null;
@@ -438,21 +441,21 @@ const WorkloadDetails = ({
       </div>
     );
   };
-  
-    if (loading) {
-      return <div className="text-center py-4">Loading {resourceType}...</div>;
-    }
-  
-    if (filteredResources.length === 0) {
-      return (
-        <div className="text-center py-4 bg-gray-50 rounded">
-          {searchTerm ? `No ${resourceType} matching "${searchTerm}"` : `No ${resourceType} available`}
-        </div>
-      );
-    }
-  
-                        return (
-                    <div>
+
+  if (loading) {
+    return <div className="text-center py-4">Loading {resourceType}...</div>;
+  }
+
+  if (!resources || resources.length === 0) {
+    return (
+      <div className="text-center py-4 bg-gray-50 rounded">
+        {searchTerm ? `No ${resourceType} matching "${searchTerm}"` : `No ${resourceType} available`}
+      </div>
+    );
+  }
+
+  return (
+    <div>
       {/* Resources table */}
       <div className="mb-4 overflow-x-auto">
         <table className="min-w-full bg-white">
@@ -461,6 +464,10 @@ const WorkloadDetails = ({
               <th className="px-4 py-2 text-left">Name</th>
               <th className="px-4 py-2 text-left">Namespace</th>
               <th className="px-4 py-2 text-left">Status</th>
+              <th className="px-4 py-2 text-left">Age</th>
+              {resourceType !== 'pods' && (
+                <th className="px-4 py-2 text-left">Replicas</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -468,7 +475,7 @@ const WorkloadDetails = ({
               const isSelected = selectedWorkload && selectedWorkload.metadata?.uid === resource.metadata?.uid;
               return (
                 <tr
-                  key={resource.metadata?.uid}
+                  key={resource.metadata?.uid || Math.random().toString()}
                   className={`hover:bg-gray-50 cursor-pointer ${isSelected ? 'bg-gray-100' : ''}`}
                   onClick={() => setSelectedWorkload(isSelected ? null : resource)}
                 >
@@ -479,24 +486,28 @@ const WorkloadDetails = ({
                       {getResourceStatus(resource)}
                     </span>
                   </td>
+                  <td className="px-4 py-2">{getResourceAge(resource)}</td>
+                  {resourceType !== 'pods' && (
+                    <td className="px-4 py-2">{getReadyReplicasDisplay(resource)}</td>
+                  )}
                 </tr>
               );
             })}
           </tbody>
         </table>
-    </div>
+      </div>
 
       {/* Details section */}
       {selectedWorkload && (
         <div className="mt-4 bg-white rounded-lg shadow p-4">
-          <h2 className="text-xl font-bold mb-4">{resourceType.slice(0, -1)} Details</h2>
+          <h2 className="text-xl font-bold mb-4">{selectedWorkload.metadata?.name} ({resourceType.slice(0, -1)})</h2>
           {/* Tabs */}
           <div className="mb-4">
             <ul className="flex border-b">
               {tabs.map(tab => (
                 <li key={tab} className="-mb-px mr-1">
                   <a
-                    className={`bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold border-l border-t border-r rounded-t ${selectedTab === tab ? 'active' : 'hover:bg-gray-200'}`}
+                    className={`bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold border-l border-t border-r rounded-t ${selectedTab === tab ? 'border-b-0' : 'hover:bg-gray-200'}`}
                     onClick={() => onTabChange(tab)}
                   >
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
