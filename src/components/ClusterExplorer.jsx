@@ -20,6 +20,7 @@ const ClusterExplorer = () => {
     timestamp: null,
     filename: ''
   });
+  const { clusterName, accountId, clusterId } = snapshotInfo;
   const { error, setError, clearSearchState } = useSearchContext();
 
   // Format the timestamp for display
@@ -28,7 +29,7 @@ const ClusterExplorer = () => {
     
     try {
       // Convert UTC ISO timestamp to local time
-      const date = new Date(timestamp);
+      const date = new Date(timestamp || '');  // Pass '' if timestamp is null/undefined
       return date.toLocaleString();
     } catch (err) {
       console.error('Error formatting timestamp:', err);
@@ -225,7 +226,13 @@ const ClusterExplorer = () => {
       <header className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-3xl font-bold">Kubernetes Cluster Explorer</h1>
+            <h1 className="text-3xl font-bold">
+              Kubernetes Cluster Explorer {clusterName && ` - ${clusterName}`}
+            </h1>
+            {snapshotLoaded && (accountId || clusterId) && (
+              <div className="text-sm text-gray-600">Account ID: {accountId}, Cluster ID: {clusterId}</div>
+            )}
+
             {snapshotLoaded && snapshotInfo.timestamp && (
               <div className="flex items-center mt-2 text-gray-600">
                 <span className="mr-2">Snapshot from: {formatTimestamp(snapshotInfo.timestamp)}</span>
@@ -249,12 +256,23 @@ const ClusterExplorer = () => {
             )}
           </div>
           {snapshotLoaded && (
-            <button
-              onClick={() => setSnapshotLoaded(false)}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-            >
-              Load Another Snapshot
-            </button>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setSnapshotLoaded(false)}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Load Another Snapshot
+              </button>
+              <button
+                onClick={() => {
+                  // Add your download snapshot logic here
+                  console.log('Download Snapshot clicked');
+                }}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+              >
+                Download Snapshot
+              </button>
+            </div>
           )}
         </div>
       </header>
