@@ -1,6 +1,6 @@
 {
-  "apiBaseUrl": "http://localhost:8000",
-  "appPort": 3000,
+  "apiBaseUrl": "http://ceb.tech-sphere.pro",
+  "appPort": 4334,
   "cacheSettings": {
     "maxTopSnapshots": 3,
     "cacheExpiryMinutes": 10
