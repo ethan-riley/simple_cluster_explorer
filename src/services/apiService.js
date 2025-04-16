@@ -1,5 +1,5 @@
 // src/services/apiService.js
-let API_BASE_URL = 'http://localhost:8000';
+let API_BASE_URL = 'http://ceb.tech-sphere.pro';
 let CACHE_SETTINGS = {
   maxTopSnapshots: 3,
   cacheExpiryMinutes: 10
