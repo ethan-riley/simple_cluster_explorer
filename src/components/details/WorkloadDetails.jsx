@@ -142,10 +142,7 @@ const WorkloadDetails = ({
   
   // Render tab content for expanded resource
   const renderTabContent = () => {
-    expandedResource = filteredResources.find(r => r.metadata?.name === expandedResourceName);
-    if (!expandedResource) return null;
-
-    const expandedResource = filteredResources.find(r => r.metadata?.name === expandedResourceName);
+    const expandedResource = filteredResources.find(r => r.metadata?.name === expandedResourceName);    
     if (!expandedResource) return null;
 
     switch (selectedTab) {
