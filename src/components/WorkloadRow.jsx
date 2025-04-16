@@ -38,23 +38,6 @@ const WorkloadRow = ({
         {resourceType !== 'pods' && (
           <td className="px-4 py-2">{getReadyReplicasDisplay(resource)}</td>
         )}
-        <td className="px-4 py-2">{getResourceAge(resource)}</td>
-        <td className="px-4 py-2">
-          {resource.metadata?.labels ? (
-            <div className="flex flex-wrap gap-1">
-              {Object.entries(resource.metadata.labels).map(([key, value]) => (
-                <span
-                  key={key}
-                  className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
-                >
-                  {key}: {value}
-                </span>
-              ))}
-            </div>
-          ) : (
-            '-'
-          )}
-        </td>
       </tr>
       {isExpanded && (
         <tr>

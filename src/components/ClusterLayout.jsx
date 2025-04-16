@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import SideMenu from './SideMenu';
 import ResourceDetails from './ResourceDetails';
 import { apiService } from '../services/apiService';
+import WorkloadDetails from './details/WorkloadDetails'; // Import WorkloadDetails
 
 const ClusterLayout = () => {
   const [resourceCounts, setResourceCounts] = useState(null);
@@ -14,6 +15,7 @@ const ClusterLayout = () => {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedNodeSelector, setSelectedNodeSelector] = useState(false);
   const [namespaces, setNamespaces] = useState([]);
+  const [expandedWorkload, setExpandedWorkload] = useState(null);
 
   // Extract resource counts from a snapshot
   const extractResourceCounts = (snapshotData) => {
@@ -127,6 +129,15 @@ const ClusterLayout = () => {
     setSelectedStatus('');
     setSelectedNodeSelector(false);
   };
+
+  const handleWorkloadClick = (workloadName) => {
+    setExpandedWorkload(prev => (prev === workloadName ? null : workloadName));
+  };
+
+  const isWorkloadActive = (resourceType, section) => {
+    return activeResource === resourceType && activeSection === section;
+  };
+
   
   if (loading) {
     return <div className="p-4 text-center">Loading cluster details...</div>;
@@ -162,20 +173,37 @@ const ClusterLayout = () => {
       
       {/* Resource Details (2/3 width) */}
       <div className="w-2/3 pl-2 overflow-y-auto">
-        {activeSection && activeResource ? (
-          <ResourceDetails 
-            resourceType={activeResource}
-            section={activeSection}
-            onBack={handleBackToMenu}
-            selectedNamespace={selectedNamespace}
-            setSelectedNamespace={setSelectedNamespace}
-            selectedStatus={selectedStatus}
-            setSelectedStatus={setSelectedStatus}
-            selectedNodeSelector={selectedNodeSelector}
-            setSelectedNodeSelector={setSelectedNodeSelector}
-            namespaces={namespaces}
-          />
-        ) : (
+        {activeResource === 'workloads' && isWorkloadActive('workloads', 'details') ? (
+          <div>
+            <ResourceDetails
+              resourceType={activeResource}
+              section={activeSection}
+              onBack={handleBackToMenu}
+              selectedNamespace={selectedNamespace}
+              setSelectedNamespace={setSelectedNamespace}
+              selectedStatus={selectedStatus}
+              setSelectedStatus={setSelectedStatus}
+              selectedNodeSelector={selectedNodeSelector}
+              setSelectedNodeSelector={setSelectedNodeSelector}
+              namespaces={namespaces}
+              onWorkloadClick={handleWorkloadClick}
+              expandedWorkload={expandedWorkload}
+            />
+          </div>
+        ) : activeSection && activeResource ? (
+          <ResourceDetails
+              resourceType={activeResource}
+              section={activeSection}
+              onBack={handleBackToMenu}
+              selectedNamespace={selectedNamespace}
+              setSelectedNamespace={setSelectedNamespace}
+              selectedStatus={selectedStatus}
+              setSelectedStatus={setSelectedStatus}
+              selectedNodeSelector={selectedNodeSelector}
+              setSelectedNodeSelector={setSelectedNodeSelector}
+              namespaces={namespaces}
+            />
+          ) : (
           <div className="flex items-center justify-center h-full bg-gray-50 rounded">
             <div className="text-center text-gray-500">
               <svg 
