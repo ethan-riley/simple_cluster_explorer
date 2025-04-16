@@ -49,7 +49,8 @@ const ClusterLayout = () => {
     counts.roles = summary.roles || 0;
     counts.rolebindings = summary.rolebindings || 0;
     counts.clusterroles = summary.clusterroles || 0;
-    counts.clusterrolebindings = summary.clusterrolebindings || 0;    counts.namespaces = summary.namespaces ?? 0;
+    counts.clusterrolebindings = summary.clusterrolebindings || 0;    
+    counts.namespaces = summary.namespaces ?? 0;
 
     return counts;
   };
@@ -170,7 +171,7 @@ const ClusterLayout = () => {
           activeSection={activeSection}
           expandedWorkload={expandedWorkload} // Pass expandedWorkload to SideMenu
         />
-      </div>
+      </aside>
 
       {/* Resource Details (2/3 width) */}
       <div className="w-2/3 pl-2 overflow-y-auto">
@@ -243,29 +244,30 @@ const ClusterLayout = () => {
               <div>{/* Node Selector content */}</div>
             )}
           </div>
-        ) : activeSection && activeResource ? (
+        ) : activeResource && activeSection ? (
           <ResourceDetails
-              resourceType={activeResource}
-              section={activeSection}
-              onBack={handleBackToMenu}
-              selectedNamespace={selectedNamespace}
-              setSelectedNamespace={setSelectedNamespace}
-              selectedStatus={selectedStatus}
-              setSelectedStatus={setSelectedStatus}
-              selectedNodeSelector={selectedNodeSelector}
-              setSelectedNodeSelector={setSelectedNodeSelector}
-              namespaces={namespaces}
-            />
-          ) : (
+            resourceType={activeResource}
+            section={activeSection}
+            onBack={handleBackToMenu}
+            selectedNamespace={selectedNamespace}
+            setSelectedNamespace={setSelectedNamespace}
+            selectedStatus={selectedStatus}
+            setSelectedStatus={setSelectedStatus}
+            selectedNodeSelector={selectedNodeSelector}
+            setSelectedNodeSelector={setSelectedNodeSelector}
+            namespaces={namespaces}
+          />
+        ) : (
           <div className="flex items-center justify-center h-full bg-gray-50 rounded">
-            <div className="text-center text-gray-500"> <svg
-              className="w-16 h-16 mx-auto mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
+            <div className="text-center text-gray-500">
+              <svg
+                className="w-16 h-16 mx-auto mb-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
                   strokeLinecap="round" 
                   strokeLinejoin="round" 
                   strokeWidth="1" 
@@ -275,7 +277,7 @@ const ClusterLayout = () => {
               <h3 className="text-xl font-medium mb-2">Select a resource</h3>
               <p>Choose a resource from the menu to view details</p>
             </div>
-          </ResourceDetails>
+          </div>
         )}
       </div>
     </div>
