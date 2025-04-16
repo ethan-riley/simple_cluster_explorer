@@ -628,3 +628,5 @@ const NetworkingDetails = ({
     );
   };
 }
+
+export default NetworkingDetails;
