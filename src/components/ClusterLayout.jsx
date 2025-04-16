@@ -130,8 +130,8 @@ const ClusterLayout = () => {
     setSelectedNodeSelector(false);
   };
 
-  const handleWorkloadClick = (workloadName) => {
-    setExpandedWorkload(prev => (prev === workloadName ? null : workloadName));
+  const handleWorkloadClick = () => {
+    setActiveSection('details'); // Set activeSection to 'details'
   };
 
   const isWorkloadActive = (resourceType, section) => {
@@ -161,7 +161,7 @@ const ClusterLayout = () => {
   
   return (
     <div className="flex h-full">
-      {/* Side Menu (1/3 width) */}
+      {/* Side Menu (width 20rem) */}
       <div className="w-1/3 border-r pr-2 overflow-y-auto">
         <SideMenu 
           resourceCounts={resourceCounts}
@@ -173,22 +173,74 @@ const ClusterLayout = () => {
       
       {/* Resource Details (2/3 width) */}
       <div className="w-2/3 pl-2 overflow-y-auto">
-        {activeResource === 'workloads' && isWorkloadActive('workloads', 'details') ? (
-          <div>
-            <ResourceDetails
-              resourceType={activeResource}
-              section={activeSection}
-              onBack={handleBackToMenu}
-              selectedNamespace={selectedNamespace}
-              setSelectedNamespace={setSelectedNamespace}
-              selectedStatus={selectedStatus}
-              setSelectedStatus={setSelectedStatus}
-              selectedNodeSelector={selectedNodeSelector}
-              setSelectedNodeSelector={setSelectedNodeSelector}
-              namespaces={namespaces}
-              onWorkloadClick={handleWorkloadClick}
-              expandedWorkload={expandedWorkload}
-            />
+        {activeResource === 'workloads' && activeSection === 'details' ? (
+          <div className="bg-white rounded-lg shadow p-4">
+            <h2 className="text-xl font-bold mb-4">Workload Details</h2>
+            {/* Render tabs for workload details */}
+            <div className="mb-4">
+              <ul className="flex border-b">
+                {['YAML', 'Details', 'Containers', 'Volumes', 'Conditions', 'Labels', 'Annotations', 'Owner References', 'Scheduling', 'Tolerations', 'Node Selector'].map(tab => (
+                  <li key={tab} className="-mb-px mr-1">
+                    <a
+                      className={`bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold border-l border-t border-r rounded-t ${
+                        activeSection === tab.toLowerCase()
+                          ? 'active'
+                          : ' hover:bg-gray-200'
+                      }`}
+                      onClick={() => setActiveSection(tab.toLowerCase())}
+                    >
+                      {tab}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Render content based on selected tab */}
+            {activeSection === 'yaml' && (
+              <div>{/* YAML content */}</div>
+            )}
+            {activeSection === 'details' && (
+              <ResourceDetails
+                resourceType={activeResource}
+                section={activeSection}
+                onBack={handleBackToMenu}
+                selectedNamespace={selectedNamespace}
+                setSelectedNamespace={setSelectedNamespace}
+                selectedStatus={selectedStatus}
+                setSelectedStatus={setSelectedStatus}
+                selectedNodeSelector={selectedNodeSelector}
+                setSelectedNodeSelector={setSelectedNodeSelector}
+                namespaces={namespaces}
+              />
+            )}
+            {activeSection === 'containers' && (
+              <div>{/* Containers content */}</div>
+            )}
+            {activeSection === 'volumes' && (
+              <div>{/* Volumes content */}</div>
+            )}
+            {activeSection === 'conditions' && (
+              <div>{/* Conditions content */}</div>
+            )}
+            {activeSection === 'labels' && (
+              <div>{/* Labels content */}</div>
+            )}
+            {activeSection === 'annotations' && (
+              <div>{/* Annotations content */}</div>
+            )}
+            {activeSection === 'owner references' && (
+              <div>{/* Owner References content */}</div>
+            )}
+            {activeSection === 'scheduling' && (
+              <div>{/* Scheduling content */}</div>
+            )}
+            {activeSection === 'tolerations' && (
+              <div>{/* Tolerations content */}</div>
+            )}
+            {activeSection === 'node selector' && (
+              <div>{/* Node Selector content */}</div>
+            )}
           </div>
         ) : activeSection && activeResource ? (
           <ResourceDetails
@@ -205,15 +257,14 @@ const ClusterLayout = () => {
             />
           ) : (
           <div className="flex items-center justify-center h-full bg-gray-50 rounded">
-            <div className="text-center text-gray-500">
-              <svg 
-                className="w-16 h-16 mx-auto mb-4" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24" 
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path 
+            <div className="text-center text-gray-500"> <svg
+              className="w-16 h-16 mx-auto mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
                   strokeLinecap="round" 
                   strokeLinejoin="round" 
                   strokeWidth="1" 

@@ -409,7 +409,7 @@ const NodesList = ({
               key={node.metadata.name}
               className={`border rounded overflow-hidden ${isExpanded ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'} ${isExpanded ? 'cursor-default' : 'cursor-pointer'}`}
               onClick={() => !isExpanded && onExpandResource(node)}
-            >
+            >              
               <div className="p-4">
                 <h3 className="text-lg font-medium">
                   {node.metadata.name} 
@@ -449,6 +449,12 @@ const NodesList = ({
                     </div>
                   </div>
                 )}
+                {/* Add arrow symbol at the end of each row */}
+                <span className="float-right">
+                  {isExpanded ? '﹀' : '>'}
+                </span>
+                
+                
               </div>
             </div>
           );

@@ -23,7 +23,7 @@ const WorkloadRow = ({
           isExpanded ? 'bg-blue-100' : ''
         }`}
         onClick={() => onExpandResource(resource)}
-      >
+        >
         <td className="px-4 py-2 font-medium">
           {resource.metadata?.name || 'unnamed'}
         </td>
@@ -38,6 +38,7 @@ const WorkloadRow = ({
         {resourceType !== 'pods' && (
           <td className="px-4 py-2">{getReadyReplicasDisplay(resource)}</td>
         )}
+        <td className="px-4 py-2 text-right">{isExpanded ? '﹀' : '>'}</td>
       </tr>
       {isExpanded && (
         <tr>
