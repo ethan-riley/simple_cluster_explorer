@@ -463,12 +463,63 @@ const WorkloadDetails = ({
             </tr>
           </thead>
           <tbody>
-            {filteredResources.map(resource => {\n              const isSelected = selectedWorkload && selectedWorkload.metadata?.uid === resource.metadata?.uid;\n              return (\n                <tr\n                  key={resource.metadata?.uid}\n                  className={`hover:bg-gray-50 cursor-pointer ${isSelected ? 'bg-gray-100' : ''}`}\n                  onClick={() => setSelectedWorkload(isSelected ? null : resource)}\n                >\n                  <td className="px-4 py-2">{resource.metadata?.name || 'N/A'}</td>\n                  <td className="px-4 py-2">{resource.metadata?.namespace || 'N/A'}</td>\n                  <td className="px-4 py-2">\n                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(getResourceStatus(resource))}`}>\n                      {getResourceStatus(resource)}\n                    </span>\n                  </td>\n                </tr>\n              );\n            })}\n          </tbody>\n        </table>\n      </div>\n\n      {/* Details section (similar to NodeDetails) */}\n      {selectedWorkload && (\n        <div className=\"mt-4 bg-white rounded-lg shadow p-4\">\n          <h2 className=\"text-xl font-bold mb-4\">{resourceType.slice(0, -1)} Details</h2>\n          {/* Tabs */}\n          <div className=\"mb-4\">\n            <ul className=\"flex border-b\">\n              {['YAML', 'Details', 'Containers', 'Volumes', 'Conditions', 'Labels', 'Annotations', 'Owner References', 'Scheduling', 'Tolerations', 'Node Selector'].map(tab => (\n                <li key={tab} className=\"-mb-px mr-1\">\n                  <a\n                    className={`bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold border-l border-t border-r rounded-t ${selectedTab === tab.toLowerCase() ? 'active' : ' hover:bg-gray-200'}`}\n                    onClick={() => onTabChange(tab.toLowerCase())}\n                  >\n                    {tab}\n                  </a>\n                </li>\n              ))}\n            </ul>\n          </div>\n\n          {/* Tab content */}\n          <div>\n            {renderTabContent(selectedWorkload, selectedTab)}\n          </div>\n        </div>\n      )}\n    </div>\n  );\n};\n
+                      {filteredResources.map(resource => {
+                        const isSelected = selectedWorkload && selectedWorkload.metadata?.uid === resource.metadata?.uid;
+                        return (
+                          <tr
+                            key={resource.metadata?.uid}
+                            className={`hover:bg-gray-50 cursor-pointer ${isSelected ? 'bg-gray-100' : ''}`}
+                            onClick={() => setSelectedWorkload(isSelected ? null : resource)}
+                          >
+                            <td className="px-4 py-2">{resource.metadata?.name || 'N/A'}</td>
+                            <td className="px-4 py-2">{resource.metadata?.namespace || 'N/A'}</td>
+                            <td className="px-4 py-2">
+                              <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(getResourceStatus(resource))}`}>
+                                {getResourceStatus(resource)}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
           </tbody>
         </table>
       </div>
-    </div>
-  );
-};
 
+                {/* Details section (similar to NodeDetails) */}
+                {selectedWorkload && (
+                  <div className="mt-4 bg-white rounded-lg shadow p-4">
+                    <h2 className="text-xl font-bold mb-4">{resourceType.slice(0, -1)} Details</h2>
+                    {/* Tabs */}
+                    <div className="mb-4">
+                      <ul className="flex border-b">
+                        {['YAML', 'Details', 'Containers', 'Volumes', 'Conditions', 'Labels', 'Annotations', 'Owner References', 'Scheduling', 'Tolerations', 'Node Selector'].map(tab => (
+                          <li key={tab} className="-mb-px mr-1">
+                            <a
+                              className={`bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold border-l border-t border-r rounded-t ${selectedTab === tab.toLowerCase() ? 'active' : 'hover:bg-gray-200'}`}
+                              onClick={() => onTabChange(tab.toLowerCase())}
+                            >
+                              {tab}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Tab content */}
+                    <div>
+                      {renderTabContent(selectedWorkload, selectedTab)}
+                    </div>
+                  </div>
+                )}
+    </div>
+            // );
+          //};          
+//           </tbody>
+//         </table>
+//       </div>
+//     </div>
+
+//   );
+// };
+};
 export default WorkloadDetails;
