@@ -142,11 +142,8 @@ const WorkloadDetails = ({
   
   // Render tab content for expanded resource
   const renderTabContent = () => {
-    const expandedResource = filteredResources.find(r => r.metadata?.name === expandedResourceName);
+    expandedResource = filteredResources.find(r => r.metadata?.name === expandedResourceName);
     if (!expandedResource) return null;
-
-
-    if (!expandedResourceName) return null;
 
     const expandedResource = filteredResources.find(r => r.metadata?.name === expandedResourceName);
     if (!expandedResource) return null;
