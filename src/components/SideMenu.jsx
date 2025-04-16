@@ -19,7 +19,7 @@ const SideMenu = ({ resourceCounts, onResourceClick, activeResource, activeSecti
     }));
   };
   
-  // Helper to render a resource count item
+    // Helper to render a resource count item
   const renderCountItem = (label, count, resourceType, section) => {
     const isActive = activeResource === resourceType && activeSection === section;
     
@@ -39,9 +39,9 @@ const SideMenu = ({ resourceCounts, onResourceClick, activeResource, activeSecti
       {/* Cluster Section */}
       <div className="bg-white rounded shadow overflow-hidden">
         <div 
-          className="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100"
+          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'cluster' ? 'bg-gray-100' : ''}`}
           onClick={() => toggleSection('cluster')}
-        >
+          >
           <h3 className="font-bold text-lg">Cluster</h3>
           <svg 
             className={`w-5 h-5 transform ${expandedSections.cluster ? 'rotate-180' : ''}`} 
@@ -65,9 +65,9 @@ const SideMenu = ({ resourceCounts, onResourceClick, activeResource, activeSecti
       {/* Workloads Section */}
       <div className="bg-white rounded shadow overflow-hidden">
         <div 
-          className="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100"
+          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'workloads' ? 'bg-gray-100' : ''}`}
           onClick={() => toggleSection('workloads')}
-        >
+          >
           <h3 className="font-bold text-lg">Workloads</h3>
           <svg 
             className={`w-5 h-5 transform ${expandedSections.workloads ? 'rotate-180' : ''}`} 
@@ -95,9 +95,9 @@ const SideMenu = ({ resourceCounts, onResourceClick, activeResource, activeSecti
       {/* Autoscaling Section */}
       <div className="bg-white rounded shadow overflow-hidden">
         <div 
-          className="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100"
+          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'autoscaling' ? 'bg-gray-100' : ''}`}
           onClick={() => toggleSection('autoscaling')}
-        >
+          >
           <h3 className="font-bold text-lg">Autoscaling</h3>
           <svg 
             className={`w-5 h-5 transform ${expandedSections.autoscaling ? 'rotate-180' : ''}`} 
@@ -121,9 +121,9 @@ const SideMenu = ({ resourceCounts, onResourceClick, activeResource, activeSecti
       {/* Service & Networking Section */}
       <div className="bg-white rounded shadow overflow-hidden">
         <div 
-          className="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100"
+          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'networking' ? 'bg-gray-100' : ''}`}
           onClick={() => toggleSection('networking')}
-        >
+          >
           <h3 className="font-bold text-lg">Service & Networking</h3>
           <svg 
             className={`w-5 h-5 transform ${expandedSections.networking ? 'rotate-180' : ''}`} 
@@ -147,9 +147,9 @@ const SideMenu = ({ resourceCounts, onResourceClick, activeResource, activeSecti
       {/* Storage Section */}
       <div className="bg-white rounded shadow overflow-hidden">
         <div 
-          className="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100"
+          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'storage' ? 'bg-gray-100' : ''}`}
           onClick={() => toggleSection('storage')}
-        >
+          >
           <h3 className="font-bold text-lg">Storage</h3>
           <svg 
             className={`w-5 h-5 transform ${expandedSections.storage ? 'rotate-180' : ''}`} 
@@ -174,9 +174,9 @@ const SideMenu = ({ resourceCounts, onResourceClick, activeResource, activeSecti
       {/* Configuration Section */}
       <div className="bg-white rounded shadow overflow-hidden">
         <div 
-          className="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100"
+          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'configuration' ? 'bg-gray-100' : ''}`}
           onClick={() => toggleSection('configuration')}
-        >
+          >
           <h3 className="font-bold text-lg">Configuration</h3>
           <svg 
             className={`w-5 h-5 transform ${expandedSections.configuration ? 'rotate-180' : ''}`} 
@@ -198,9 +198,9 @@ const SideMenu = ({ resourceCounts, onResourceClick, activeResource, activeSecti
       {/* Security Section */}
       <div className="bg-white rounded shadow overflow-hidden">
         <div 
-          className="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100"
+          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'security' ? 'bg-gray-100' : ''}`}
           onClick={() => toggleSection('security')}
-        >
+          >
           <h3 className="font-bold text-lg">Security</h3>
           <svg 
             className={`w-5 h-5 transform ${expandedSections.security ? 'rotate-180' : ''}`} 

@@ -162,15 +162,16 @@ const ClusterLayout = () => {
   return (
     <div className="flex h-full">
       {/* Side Menu (width 20rem) */}
-      <div className="w-1/3 border-r pr-2 overflow-y-auto">
+      <aside className="w-80 border-r pr-2 overflow-y-auto">
         <SideMenu 
           resourceCounts={resourceCounts}
           onResourceClick={handleResourceClick}
           activeResource={activeResource}
           activeSection={activeSection}
+          expandedWorkload={expandedWorkload} // Pass expandedWorkload to SideMenu
         />
       </div>
-      
+
       {/* Resource Details (2/3 width) */}
       <div className="w-2/3 pl-2 overflow-y-auto">
         {activeResource === 'workloads' && activeSection === 'details' ? (
@@ -274,7 +275,7 @@ const ClusterLayout = () => {
               <h3 className="text-xl font-medium mb-2">Select a resource</h3>
               <p>Choose a resource from the menu to view details</p>
             </div>
-          </div>
+          </ResourceDetails>
         )}
       </div>
     </div>

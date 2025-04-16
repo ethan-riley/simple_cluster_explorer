@@ -12,6 +12,7 @@ const WorkloadDetails = ({
   selectedNodeSelector,
   selectedTab,
   onTabChange,
+  onWorkloadSelect,
 }) => {
   // Filter resources based on search term
   const filteredResources = resources.filter(resource => {
@@ -32,10 +33,7 @@ const WorkloadDetails = ({
   });
   
   // Local state to manage expanded resource
-  const [expandedResourceName, setExpandedResourceName] = useState(null);
-  const handleExpandResource = (resource) => {
-    setExpandedResourceName(expandedResourceName === resource.metadata?.name ? null : resource.metadata?.name);
-  };
+  const [selectedWorkload, setSelectedWorkload] = useState(null);
 
   const tabs = ['details', 'yaml', 'events', 'pods', 'conditions', 'labels', 'annotations'];
   
@@ -140,11 +138,11 @@ const WorkloadDetails = ({
     return `${ready}/${total}`;
   };
   
-  // Render tab content for expanded resource
-  const renderTabContent = (resource, tab) => {
-    if (!resource) return null;
-
-    switch (tab) {
+    // Render tab content for selected resource
+    const renderTabContent = (resource, tab) => {
+      if (!resource) return null;
+  
+      switch (tab) {
       case 'details':
         return renderDetailsTab(resource);
       case 'yaml':
@@ -165,7 +163,7 @@ const WorkloadDetails = ({
             Information for {tab} is not available at this moment.
           </div>
         );
-    }
+      }
   };
   
   // Render details tab
@@ -441,20 +439,18 @@ const WorkloadDetails = ({
     );
   };
   
-  if (loading) {
-    return <div className="text-center py-4">Loading {resourceType}...</div>;
-  }
+    if (loading) {
+      return <div className="text-center py-4">Loading {resourceType}...</div>;
+    }
   
-  if (filteredResources.length === 0) {
-    return (
-      <div className="text-center py-4 bg-gray-50 rounded">
-        {searchTerm ? `No ${resourceType} matching "${searchTerm}"` : `No ${resourceType} available`}
-      </div>
-    );
-  }
+    if (filteredResources.length === 0) {
+      return (
+        <div className="text-center py-4 bg-gray-50 rounded">
+          {searchTerm ? `No ${resourceType} matching "${searchTerm}"` : `No ${resourceType} available`}
+        </div>
+      );
+    }
   
-
-  return (
     <div>
       {/* Resources table */}
       <div className="mb-4 overflow-x-auto">
@@ -464,29 +460,10 @@ const WorkloadDetails = ({
               <th className="px-4 py-2 text-left">Name</th>
               <th className="px-4 py-2 text-left">Namespace</th>
               <th className="px-4 py-2 text-left">Status</th>
-              {resourceType !== 'pods' && (
-                <th className="px-4 py-2 text-left">Replicas</th>
-              )}
-              <th className="px-4 py-2 text-left">Age</th>
-              <th className="px-4 py-2 text-left">Labels</th>
             </tr>
           </thead>
           <tbody>
-            {filteredResources.map(resource => (
-              <WorkloadRow
-                key={`${resource.metadata?.namespace || 'default'}-${resource.metadata?.name || 'unnamed'}`}
-                resource={resource}
-                isExpanded={expandedResourceName === resource.metadata?.name}
-                onExpandResource={handleExpandResource}
-                renderTabContent={renderTabContent}
-                selectedTab={selectedTab}
-                getStatusColor={getStatusColor}
-                getResourceStatus={getResourceStatus}
-                getReadyReplicasDisplay={getReadyReplicasDisplay}
-                getResourceAge={getResourceAge}
-                resourceType={resourceType}
-              />
-            ))}
+            {filteredResources.map(resource => {\n              const isSelected = selectedWorkload && selectedWorkload.metadata?.uid === resource.metadata?.uid;\n              return (\n                <tr\n                  key={resource.metadata?.uid}\n                  className={`hover:bg-gray-50 cursor-pointer ${isSelected ? 'bg-gray-100' : ''}`}\n                  onClick={() => setSelectedWorkload(isSelected ? null : resource)}\n                >\n                  <td className="px-4 py-2">{resource.metadata?.name || 'N/A'}</td>\n                  <td className="px-4 py-2">{resource.metadata?.namespace || 'N/A'}</td>\n                  <td className="px-4 py-2">\n                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(getResourceStatus(resource))}`}>\n                      {getResourceStatus(resource)}\n                    </span>\n                  </td>\n                </tr>\n              );\n            })}\n          </tbody>\n        </table>\n      </div>\n\n      {/* Details section (similar to NodeDetails) */}\n      {selectedWorkload && (\n        <div className=\"mt-4 bg-white rounded-lg shadow p-4\">\n          <h2 className=\"text-xl font-bold mb-4\">{resourceType.slice(0, -1)} Details</h2>\n          {/* Tabs */}\n          <div className=\"mb-4\">\n            <ul className=\"flex border-b\">\n              {['YAML', 'Details', 'Containers', 'Volumes', 'Conditions', 'Labels', 'Annotations', 'Owner References', 'Scheduling', 'Tolerations', 'Node Selector'].map(tab => (\n                <li key={tab} className=\"-mb-px mr-1\">\n                  <a\n                    className={`bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold border-l border-t border-r rounded-t ${selectedTab === tab.toLowerCase() ? 'active' : ' hover:bg-gray-200'}`}\n                    onClick={() => onTabChange(tab.toLowerCase())}\n                  >\n                    {tab}\n                  </a>\n                </li>\n              ))}\n            </ul>\n          </div>\n\n          {/* Tab content */}\n          <div>\n            {renderTabContent(selectedWorkload, selectedTab)}\n          </div>\n        </div>\n      )}\n    </div>\n  );\n};\n
           </tbody>
         </table>
       </div>
