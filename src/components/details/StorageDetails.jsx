@@ -369,4 +369,4 @@ const StorageDetails = ({
       </div>
     );
   }
-
+}

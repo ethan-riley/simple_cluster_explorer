@@ -60,7 +60,6 @@ const WorkloadRow = ({
         <tr>
           <td colSpan="100%" className="p-4 bg-gray-100">
             {renderTabContent(resource, selectedTab)}
-            </div>
           </td>
         </tr>
       )}

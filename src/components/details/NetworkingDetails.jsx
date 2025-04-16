@@ -627,4 +627,4 @@ const NetworkingDetails = ({
       </div>
     );
   };
-  
+}
