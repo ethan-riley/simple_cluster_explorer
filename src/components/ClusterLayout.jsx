@@ -17,126 +17,39 @@ const ClusterLayout = () => {
 
   // Extract resource counts from a snapshot
   const extractResourceCounts = (snapshotData) => {
-    if (!snapshotData) return null;
-    
-    // Initialize an object for our counts
+    if (!snapshotData || !snapshotData.data) return {};
+  
     const counts = {};
-    
-    // Check different structures in the snapshot data
-    if (snapshotData.data) {
-      // Try to get counts from the resource summary
-      const summary = snapshotData.data;
-      
-      // Process each resource type
-      const processResourceList = (key, apiKey) => {
-        // Look for different formats in the snapshot data
-        if (summary[apiKey] && Array.isArray(summary[apiKey].items)) {
-          counts[key] = summary[apiKey].items.length;
-        } else if (summary[apiKey] && Array.isArray(summary[apiKey])) {
-          counts[key] = summary[apiKey].length;
-        } else if (summary[apiKey] && typeof summary[apiKey] === 'object') {
-          // Try to find items within nested objects
-          const findItems = (obj) => {
-            for (const k in obj) {
-              if (k === 'items' && Array.isArray(obj[k])) {
-                return obj[k].length;
-              } else if (typeof obj[k] === 'object') {
-                const result = findItems(obj[k]);
-                if (result !== null) return result;
-              }
-            }
-            return null;
-          };
-          
-          const itemCount = findItems(summary[apiKey]);
-          counts[key] = itemCount !== null ? itemCount : 0;
-        } else {
-          counts[key] = 0;
-        }
-      };
-      
-      // Map frontend keys to possible API structures
-      processResourceList('nodes', 'nodeList');
-      processResourceList('namespaces', 'namespaceList');
-      processResourceList('events', 'eventList');
-      processResourceList('pods', 'podList');
-      processResourceList('deployments', 'deploymentList');
-      processResourceList('statefulsets', 'statefulSetList');
-      processResourceList('daemonsets', 'daemonSetList');
-      processResourceList('jobs', 'jobList');
-      processResourceList('replicasets', 'replicaSetList');
-      processResourceList('horizontalpodautoscalers', 'horizontalPodAutoscalerList');
-      processResourceList('poddisruptionbudgets', 'podDisruptionBudgetList');
-      processResourceList('services', 'serviceList');
-      processResourceList('ingresses', 'ingressList');
-      processResourceList('networkpolicies', 'networkPolicyList');
-      processResourceList('persistentvolumes', 'persistentVolumeList');
-      processResourceList('persistentvolumeclaims', 'persistentVolumeClaimList');
-      processResourceList('storageclasses', 'storageClassList');
-      processResourceList('configmaps', 'configMapList');
-      processResourceList('roles', 'roleList');
-      processResourceList('rolebindings', 'roleBindingList');
-      processResourceList('clusterroles', 'clusterRoleList');
-      processResourceList('clusterrolebindings', 'clusterRoleBindingList');
-      processResourceList('rollouts', 'rolloutList');
-      processResourceList('csinodes', 'csiNodeList');
-      
-      // Special case for WOOP - check multiple possible keys
-      if (summary.woopList && Array.isArray(summary.woopList.items)) {
-        counts.woop = summary.woopList.items.length;
-      } else if (summary.woopList && Array.isArray(summary.woopList)) {
-        counts.woop = summary.woopList.length;
-      } else if (summary.recommendationList && Array.isArray(summary.recommendationList.items)) {
-        counts.woop = summary.recommendationList.items.length;
-      } else if (summary.recommendationList && Array.isArray(summary.recommendationList)) {
-        counts.woop = summary.recommendationList.length;
-      } else {
-        counts.woop = 0;
-      }
-    } else {
-      // Alternative: try to get data from the resource_summary if it exists
-      const summary = snapshotData.resource_summary || {};
-      
-      Object.keys(summary).forEach(key => {
-        counts[key.toLowerCase()] = summary[key] || 0;
-      });
-    }
-    
-    // Fallback: If all counts are zero, generate some random counts for development
-    if (Object.values(counts).every(count => count === 0)) {
-      console.warn("All resource counts are zero, using fallback values for development");
-      const randomCount = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-      
-      counts.nodes = randomCount(3, 8);
-      counts.namespaces = randomCount(10, 25);
-      counts.events = randomCount(50, 200);
-      counts.pods = randomCount(30, 100);
-      counts.deployments = randomCount(10, 30);
-      counts.statefulsets = randomCount(0, 5);
-      counts.daemonsets = randomCount(1, 10);
-      counts.jobs = randomCount(0, 10);
-      counts.replicasets = randomCount(10, 40);
-      counts.horizontalpodautoscalers = randomCount(0, 8);
-      counts.poddisruptionbudgets = randomCount(0, 5);
-      counts.services = randomCount(10, 30);
-      counts.ingresses = randomCount(0, 10);
-      counts.networkpolicies = randomCount(0, 8);
-      counts.persistentvolumes = randomCount(0, 15);
-      counts.persistentvolumeclaims = randomCount(0, 20);
-      counts.storageclasses = randomCount(1, 5);
-      counts.configmaps = randomCount(10, 40);
-      counts.roles = randomCount(10, 30);
-      counts.rolebindings = randomCount(10, 30);
-      counts.clusterroles = randomCount(5, 20);
-      counts.clusterrolebindings = randomCount(5, 20);
-      counts.rollouts = randomCount(0, 5);
-      counts.csinodes = randomCount(0, 8);
-      counts.woop = randomCount(0, 10);
-    }
-    
-    console.log("Extracted resource counts:", counts);
+    const summary = snapshotData.data;
+  
+    // Directly map resource types to their counts from the summary object
+    counts.nodes = summary.nodes || 0;
+    counts.pods = summary.pods || 0;
+    counts.services = summary.services || 0;
+    counts.deployments = summary.deployments || 0;
+    counts.daemonsets = summary.daemonsets || 0;
+    counts.statefulsets = summary.statefulsets || 0;
+    counts.replicationcontrollers = summary.replicationcontrollers || 0;
+    counts.replicasets = summary.replicasets || 0;
+    counts.jobs = summary.jobs || 0;
+    counts.persistentvolumes = summary.persistentvolumes || 0;
+    counts.persistentvolumeclaims = summary.persistentvolumeclaims || 0;
+    counts.storageclasses = summary.storageclasses || 0;
+    counts.csinodes = summary.csinodes || 0;
+    counts.configmaps = summary.configmaps || 0;
+    counts.poddisruptionbudgets = summary.poddisruptionbudgets || 0;
+    counts.horizontalpodautoscalers = summary.horizontalpodautoscalers || 0;
+    counts.ingresses = summary.ingresses || 0;
+    counts.networkpolicies = summary.networkpolicies || 0;
+    counts.roles = summary.roles || 0;
+    counts.rolebindings = summary.rolebindings || 0;
+    counts.clusterroles = summary.clusterroles || 0;
+    counts.clusterrolebindings = summary.clusterrolebindings || 0;
+    counts.namespaces = summary.namespaces || 0;
+  
     return counts;
   };
+  
 
   // Fetch resource summaries when component mounts
   useEffect(() => {
