@@ -1,5 +1,6 @@
 // src/components/details/WorkloadDetails.jsx
-import React from 'react';
+import React, { useState } from 'react';
+import WorkloadRow from './WorkloadRow';
 
 const WorkloadDetails = ({
   resourceType,
@@ -11,8 +12,6 @@ const WorkloadDetails = ({
   selectedNodeSelector,
   selectedTab,
   onTabChange,
-  expandedResource,
-  onExpandResource
 }) => {
   // Filter resources based on search term
   const filteredResources = resources.filter(resource => {
@@ -32,6 +31,12 @@ const WorkloadDetails = ({
     return searchString.includes(searchTerm.toLowerCase());
   });
   
+  // Local state to manage expanded resource
+  const [expandedResourceName, setExpandedResourceName] = useState(null);
+  const handleExpandResource = (resource) => {
+    setExpandedResourceName(expandedResourceName === resource.metadata?.name ? null : resource.metadata?.name);
+  };
+
   const tabs = ['details', 'yaml', 'events', 'pods', 'conditions', 'labels', 'annotations'];
   
   // Helper to get resource status
@@ -46,7 +51,7 @@ const WorkloadDetails = ({
       case 'daemonsets':
         const availableReplicas = resource.status?.availableReplicas || 0;
         const replicas = resource.status?.replicas || 0;
-        if (availableReplicas === replicas && replicas > 0) {
+        if (replicas > 0 && availableReplicas === replicas) {
           return 'Ready';
         } else if (availableReplicas < replicas) {
           return 'Progressing';
@@ -137,8 +142,15 @@ const WorkloadDetails = ({
   
   // Render tab content for expanded resource
   const renderTabContent = () => {
+    const expandedResource = filteredResources.find(r => r.metadata?.name === expandedResourceName);
     if (!expandedResource) return null;
-    
+
+
+    if (!expandedResourceName) return null;
+
+    const expandedResource = filteredResources.find(r => r.metadata?.name === expandedResourceName);
+    if (!expandedResource) return null;
+
     switch (selectedTab) {
       case 'details':
         return renderDetailsTab();
@@ -458,67 +470,47 @@ const WorkloadDetails = ({
               <th className="px-4 py-2 text-left">Labels</th>
             </tr>
           </thead>
+        </table>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {/* Resources table */}
+      <div className="mb-4 overflow-x-auto">
+        <table className="min-w-full bg-white">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="px-4 py-2 text-left">Name</th>
+              <th className="px-4 py-2 text-left">Namespace</th>
+              <th className="px-4 py-2 text-left">Status</th>
+              {resourceType !== 'pods' && (
+                <th className="px-4 py-2 text-left">Replicas</th>
+              )}
+              <th className="px-4 py-2 text-left">Age</th>
+              <th className="px-4 py-2 text-left">Labels</th>
+            </tr>
+          </thead>
           <tbody>
-            {filteredResources.map(resource => {
-              const isExpanded = expandedResource && expandedResource.metadata.name === resource.metadata.name;
-              const status = getResourceStatus(resource);
-              
-              return (
-                <tr 
-                  key={`${resource.metadata?.namespace || 'default'}-${resource.metadata?.name || 'unnamed'}`}
-                  className={`border-t hover:bg-gray-50 cursor-pointer ${isExpanded ? 'bg-blue-50' : ''}`}
-                  onClick={() => onExpandResource(resource)}
-                >
-                  <td className="px-4 py-2 font-medium">{resource.metadata?.name || 'unnamed'}</td>
-                  <td className="px-4 py-2">{resource.metadata?.namespace || '-'}</td>
-                  <td className="px-4 py-2">
-                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(status)}`}>
-                      {status}
-                    </span>
-                  </td>
-                  {resourceType !== 'pods' && (
-                    <td className="px-4 py-2">{getReadyReplicasDisplay(resource)}</td>
-                  )}
-                  <td className="px-4 py-2">{getResourceAge(resource)}</td>
-                  <td className="px-4 py-2">
-                    {resource.metadata?.labels ? (
-                      <div className="flex flex-wrap gap-1">
-                        {Object.entries(resource.metadata.labels).map(([key, value]) => (
-                          <span key={key} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                            {key}: {value}
-                          </span>
-                        ))}
-                      </div>
-                    ) : '-'}
-                  </td>
-                </tr>
-              );
-            })}
+            {filteredResources.map(resource => (
+              <WorkloadRow
+                key={`${resource.metadata?.namespace || 'default'}-${resource.metadata?.name || 'unnamed'}`}
+                resource={resource}
+                isExpanded={expandedResourceName === resource.metadata?.name}
+                onExpandResource={handleExpandResource}
+                renderTabContent={renderTabContent}
+                selectedTab={selectedTab}
+                getStatusColor={getStatusColor}
+                getResourceStatus={getResourceStatus}
+                getReadyReplicasDisplay={getReadyReplicasDisplay}
+                getResourceAge={getResourceAge}
+                resourceType={resourceType}
+              />
+            ))}
           </tbody>
         </table>
       </div>
-      
-      {/* Detailed view when a resource is expanded */}
-      {expandedResource && (
-        <div className="mt-4 border rounded overflow-hidden">
-          <div className="bg-gray-100 p-2 border-b">
-            <div className="flex flex-wrap">
-              {tabs.map(tab => (
-                <button
-                  key={tab}
-                  className={`mr-2 px-3 py-1 rounded ${selectedTab === tab ? 'bg-blue-500 text-white' : 'bg-white'}`}
-                  onClick={() => onTabChange(tab)}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="p-4">
-            {renderTabContent()}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

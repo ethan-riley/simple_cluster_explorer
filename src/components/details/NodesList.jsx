@@ -392,7 +392,7 @@ const NodesList = ({
   if (filteredResources.length === 0) {
     return (
       <div className="text-center py-4 bg-gray-50 rounded">
-        {searchTerm ? `No nodes matching "${searchTerm}"` : 'No nodes available'}
+        {searchTerm ? `No nodes matching "${searchTerm}"` : "No nodes available"}
       </div>
     );
   }
@@ -403,13 +403,12 @@ const NodesList = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         {filteredResources.map(node => {
           const isExpanded = expandedResource && expandedResource.metadata.name === node.metadata.name;
-          const resourceInfo = getResourceInfo(node);
-          
+          const resourceInfo = getResourceInfo(node);          
           return (
             <div 
               key={node.metadata.name}
-              className={`border rounded overflow-hidden ${isExpanded ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'}`}
-              onClick={() => onExpandResource(node)}
+              className={`border rounded overflow-hidden ${isExpanded ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'} ${isExpanded ? 'cursor-default' : 'cursor-pointer'}`}
+              onClick={() => !isExpanded && onExpandResource(node)}
             >
               <div className="p-4">
                 <h3 className="text-lg font-medium">
@@ -430,35 +429,31 @@ const NodesList = ({
                   </div>
                   <div className="text-sm">
                     <span className="font-medium">Memory:</span> {resourceInfo.memory}
-                  </div>
+                  </div>                  
                 </div>
+                {isExpanded && (
+                  <div className="mt-4 border-t pt-4">
+                    <div className="flex flex-wrap">
+                      {tabs.map(tab => (
+                        <button
+                          key={tab}
+                          className={`mr-2 px-3 py-1 rounded ${selectedTab === tab ? 'bg-blue-500 text-white' : 'bg-white'}`}
+                          onClick={() => onTabChange(tab)}
+                        >
+                          {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="p-4">
+                      {renderTabContent()}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           );
         })}
       </div>
-      
-      {/* Detailed view when a node is expanded */}
-      {expandedResource && (
-        <div className="mt-4 border rounded overflow-hidden">
-          <div className="bg-gray-100 p-2 border-b">
-            <div className="flex flex-wrap">
-              {tabs.map(tab => (
-                <button
-                  key={tab}
-                  className={`mr-2 px-3 py-1 rounded ${selectedTab === tab ? 'bg-blue-500 text-white' : 'bg-white'}`}
-                  onClick={() => onTabChange(tab)}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="p-4">
-            {renderTabContent()}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
