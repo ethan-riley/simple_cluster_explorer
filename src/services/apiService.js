@@ -1,5 +1,29 @@
 // src/services/apiService.js
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
+let API_BASE_URL = 'http://localhost:8000';
+let CACHE_SETTINGS = {
+  maxTopSnapshots: 3,
+  cacheExpiryMinutes: 10
+};
+
+// Load config from public file
+const loadConfig = async () => {
+  try {
+    const response = await fetch('/config.json');
+    if (response.ok) {
+      const config = await response.json();
+      API_BASE_URL = config.apiBaseUrl || API_BASE_URL;
+      CACHE_SETTINGS = {
+        ...CACHE_SETTINGS,
+        ...(config.cacheSettings || {})
+      };
+    }
+  } catch (err) {
+    console.error('Failed to load config:', err);
+  }
+};
+
+// Initialize config on service creation
+loadConfig();
 
 export class ApiService {
   // Cluster snapshot loading with cache support
@@ -65,33 +89,40 @@ export class ApiService {
         let timestamp = new Date().toISOString(); // Default to current time
 
         if (result.snapshotFilename) {
-          // Extract timestamp from format like "2023-04-15T10:30:00.12345Z-snapshot.json.gz"
           const timestampMatch = result.snapshotFilename.match(/^(.*?)-snapshot/);
           if (timestampMatch && timestampMatch[1]) {
             timestamp = timestampMatch[1];
           }
         }
 
-        // Create a cache key based on cluster ID and region
+        // Create cache keys
         const cacheKey = `snapshot_data_${formattedClusterId}_${formattedRegion}`;
+        const historyKey = `snapshot_history_${formattedClusterId}_${formattedRegion}`;
 
-        // Store the actual snapshot data
-        localStorage.setItem(cacheKey, JSON.stringify(result));
+        // Get existing history
+        let history = [];
+        const existingHistory = localStorage.getItem(historyKey);
+        if (existingHistory) {
+          history = JSON.parse(existingHistory);
+        }
 
-        // Store metadata about the snapshot
-        const snapshotInfo = {
-          clusterId: formattedClusterId,
-          region: formattedRegion,
+        // Add new snapshot to history
+        const newSnapshot = {
+          data: result,
           timestamp: timestamp,
           filename: result.snapshotFilename || ''
         };
 
-        localStorage.setItem(`snapshot_${formattedClusterId}_${formattedRegion}`, JSON.stringify(snapshotInfo));
+        // Keep only the most recent snapshots
+        history = [newSnapshot, ...history].slice(0, CACHE_SETTINGS.maxTopSnapshots);
+
+        // Store the latest snapshot separately for quick access
+        localStorage.setItem(cacheKey, JSON.stringify(result));
+        localStorage.setItem(historyKey, JSON.stringify(history));
 
         console.log(`Cached snapshot for ${formattedClusterId} in ${formattedRegion}`);
       } catch (err) {
         console.error('Error caching snapshot:', err);
-        // If caching fails, we can still continue - it's not critical
       }
     }
 
@@ -165,11 +196,40 @@ export class ApiService {
 
     const dataKey = `snapshot_data_${clusterId}_${region}`;
     const infoKey = `snapshot_${clusterId}_${region}`;
+    const historyKey = `snapshot_history_${clusterId}_${region}`;
 
     localStorage.removeItem(dataKey);
     localStorage.removeItem(infoKey);
+    localStorage.removeItem(historyKey);
 
     console.log(`Cleared cache for cluster ${clusterId} in ${region}`);
+  }
+
+  // Get cached snapshot history
+  getCachedSnapshotHistory(clusterId, region = "US") {
+    if (!clusterId || clusterId.trim() === '') {
+      return [];
+    }
+
+    const historyKey = `snapshot_history_${clusterId}_${region}`;
+    const cachedHistory = localStorage.getItem(historyKey);
+
+    if (!cachedHistory) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(cachedHistory);
+    } catch (err) {
+      console.error('Error parsing cached snapshot history:', err);
+      return [];
+    }
+  }
+
+  // Get top cached snapshots
+  getTopCachedSnapshots(clusterId, region = "US", limit = CACHE_SETTINGS.maxTopSnapshots) {
+    const history = this.getCachedSnapshotHistory(clusterId, region);
+    return history.slice(0, limit);
   }
 
   // Resource exploration

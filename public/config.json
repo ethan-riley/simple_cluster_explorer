@@ -1,0 +1,8 @@
+{
+  "apiBaseUrl": "http://localhost:8000",
+  "appPort": 3000,
+  "cacheSettings": {
+    "maxTopSnapshots": 3,
+    "cacheExpiryMinutes": 10
+  }
+}
