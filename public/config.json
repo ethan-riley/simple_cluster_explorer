@@ -1,8 +1,0 @@
-{
-  "apiBaseUrl": "http://ceb.tech-sphere.pro",
-  "appPort": 4334,
-  "cacheSettings": {
-    "maxTopSnapshots": 3,
-    "cacheExpiryMinutes": 10
-  }
-}
