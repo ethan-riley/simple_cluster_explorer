@@ -11,6 +11,7 @@
 .
 .DS_Store
 .env
+package-lock.json
 .idea/
 .mypy_cache/
 .pytest_cache/
