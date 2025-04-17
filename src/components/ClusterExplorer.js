@@ -104,6 +104,16 @@ const ClusterExplorer = () => {
 	  // Create a custom cluster details object based on the snapshot metadata
 	  const customClusterDetails = {
 	    id: snapshotData.clusterId || 'external-snapshot',
+	    cluster_id: snapshotData.clusterId || 'external-snapshot',
+	    clusterId: snapshotData.clusterId || 'external-snapshot',
+	    alias: snapshotData.clusterName || `External Snapshot ${new Date().toLocaleString()}`,
+	    region: snapshotData.region || 'Unknown',
+	    apiKey: snapshotData.apiKey || null
+	  };
+	  const clusterDetails = {
+	    id: snapshotData.clusterId || 'external-snapshot',
+	    cluster_id: snapshotData.clusterId || 'external-snapshot',
+	    clusterId: snapshotData.clusterId || 'external-snapshot',
 	    alias: snapshotData.clusterName || `External Snapshot ${new Date().toLocaleString()}`,
 	    region: snapshotData.region || 'Unknown',
 	    apiKey: snapshotData.apiKey || null
@@ -123,6 +133,46 @@ const ClusterExplorer = () => {
 
 	  // Try to fetch events if appropriate
 	  fetchEventsForOverview();
+        console.log("Fetching cluster data with apiKey:", clusterDetails.apiKey);
+        try {
+            setIsLoadingProblematicNodes(true);
+            setIsLoadingWorkloads(true);
+            setEventsLoading(true);
+
+            Promise.all([
+                fetchProblematicNodes(
+                    clusterDetails.id,
+                    clusterDetails.region || 'US',
+                    clusterDetails.apiKey
+                ).catch(err => {
+                    console.error('Error fetching problematic nodes:', err);
+                    setProblematicNodesError(err.message);
+                    return null;
+                }).then(response => {
+                    setProblematicNodes(response);
+                }),
+
+                fetchProblematicWorkloads(
+                    clusterDetails.id,
+                    clusterDetails.region || 'US',
+                    clusterDetails.apiKey
+                ).catch(err => {
+                    console.error('Error fetching problematic workloads:', err);
+                    setProblematicWorkloadsError(err.message);
+                    return null;
+                }).then(response => {
+                    setProblematicWorkloads(response);
+                }),
+
+                fetchEventsForOverview()
+            ]);
+        } catch (error) {
+            console.error('Error fetching cluster data:', error);
+        } finally {
+            setIsLoadingProblematicNodes(false);
+            setIsLoadingWorkloads(false);
+            // eventsLoading is set to false in fetchEventsForOverview
+        };
 	};
 
     // Helper to format the selected datetime into separate date and time strings, for displaying in time selection button.
@@ -140,12 +190,14 @@ const ClusterExplorer = () => {
 
     const {date, time} = getFormattedDateTime(selectedDateTime);
 
-    const fetchClusterData = async (clusterId) => {
-        const clusterDetails = getClusterDetails(clusterId);
+    //const fetchClusterData = async (clusterId) => {
+    const fetchClusterData = async (urlClusterId) => {
+        const clusterId = clusterDetails.id
+        //const clusterDetails = getClusterDetails(urlClusterId);
         if (!clusterDetails?.apiKey) {
+            console.log("hola");
             return;
         }
-
         // Fetch all data in parallel
         console.log("Fetching cluster data with apiKey:", clusterDetails.apiKey);
         try {
@@ -155,8 +207,8 @@ const ClusterExplorer = () => {
 
             await Promise.all([
                 fetchProblematicNodes(
-                    clusterId,
-                    clusterDetails.region || 'US',                   
+                    clusterDetails.id,
+                    clusterDetails.region || 'US',
                     clusterDetails.apiKey
                 ).catch(err => {
                     console.error('Error fetching problematic nodes:', err);
@@ -339,13 +391,16 @@ const ClusterExplorer = () => {
     };
 
     const downloadSnapshot = async () => {
-        if (!selectedCluster) return;
+        if (!selectedCluster) {
+            return;
+        }
 
         setIsDownloading(true);
         setError(null);
 
         try {
             const clusterInfo = getClusterDetails(selectedCluster);
+            console.log("TRACE Selected Cluster, 353", selectedCluster);
             const region = clusterInfo?.region || 'US';
             let url = `https://ceb.tech-sphere.pro/cluster/snapshot/raw?cluster_id=${selectedCluster}&region=${region}`;
 
@@ -452,6 +507,7 @@ const ClusterExplorer = () => {
 	// First useEffect - runs once on mount to check URL parameters
 	useEffect(() => {
 	  const params = new URLSearchParams(window.location.search);
+      console.log('pase por aca');
 
 	  const urlClusterId = params.get('clusterid') || params.get('cluster_id');
 	  if (urlClusterId) {
@@ -461,9 +517,16 @@ const ClusterExplorer = () => {
 	    const urlApiKey = params.get('apikey') || params.get('api_key');
         const urlClusterName = params.get('clustername') || params.get('cluster_name');
 
-
+        const clusterId = urlClusterId;
 	    // Create a snapshot request object
 	    const snapshotRequest = {
+	      clusterId: urlClusterId,
+	      region: urlRegion || 'US',
+	      date: urlDate || null,
+	      apiKey: urlApiKey || null
+	    };
+	    const clusterDetails = {
+	      id: urlClusterId,
 	      clusterId: urlClusterId,
 	      region: urlRegion || 'US',
 	      date: urlDate || null,
