@@ -5,6 +5,7 @@ export const fetchProblematicNodes = async (clusterId, region, apiKey) => {
     if (!apiKey) {
         return null;
     }
+    console.log('API Key (fetchProblematicNodes):', apiKey);
 
     const response = await fetch(
         `${API_BASE_URL}/clusters/${clusterId}/problematic-nodes?region=${region}&api_key=${apiKey}`,
@@ -27,6 +28,7 @@ export const fetchProblematicWorkloads = async (clusterId, region, apiKey, aggre
     if (!apiKey) {
         return null;
     }
+    console.log('API Key (fetchProblematicWorkloads):', apiKey);
 
     const response = await fetch(
         `${API_BASE_URL}/clusters/${clusterId}/problematic-workloads?region=${region}&api_key=${apiKey}&aggressive_mode=${aggressiveMode}`,
