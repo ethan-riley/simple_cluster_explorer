@@ -1,5 +1,6 @@
 // src/components/SideMenu.jsx
 import React, { useState } from 'react';
+import { ChevronRight, ChevronDown, LayoutGrid, CheckCircle, Search, Lightbulb } from 'lucide-react';
 
 const SideMenu = ({ resources, onResourceSelect, selectedResource }) => {
   const [expandedGroups, setExpandedGroups] = useState({});
