@@ -165,7 +165,7 @@ const ClusterLayout = () => {
       {/* Side Menu (width 20rem) */}
       <aside className="w-80 border-r pr-2 overflow-y-auto">
         <SideMenu 
-          resourceCounts={resourceCounts}
+          resources={resourceCounts}
           onResourceClick={handleResourceClick}
           activeResource={activeResource}
           activeSection={activeSection}
