@@ -54,24 +54,24 @@ const NodeDetails = ({ items = [], handleResourceSelect }) => {
   // Function to format memory from bytes to GiBs
   const formatMemory = (memoryString) => {
     if (!memoryString) return 'N/A';
-    
+
     console.log('Raw memory value:', memoryString);
-    
+
     // Remove any whitespace and convert to lowercase for consistent handling
     const memory = memoryString.trim().toLowerCase();
     console.log('Trimmed memory value:', memory);
-    
+
     // Extract the numeric value and unit using Kubernetes unit format
     const match = memory.match(/^(\d+)([kmg]i)?$/);
     console.log('Regex match:', match);
-    
+
     if (!match) return memoryString; // Return original if format is unexpected
-    
+
     const [, value, unit] = match;
     const numericValue = parseInt(value);
     console.log('Parsed numeric value:', numericValue);
     console.log('Unit:', unit);
-    
+
     // Convert to GiB based on the unit
     let gibs;
     switch (unit) {
@@ -87,7 +87,7 @@ const NodeDetails = ({ items = [], handleResourceSelect }) => {
       default: // If no unit specified, assume bytes
         gibs = numericValue / (1024 * 1024 * 1024);
     }
-    
+
     console.log('Final GiB value:', gibs);
     return `${gibs.toFixed(1)} GiB`;
   };
@@ -102,7 +102,7 @@ const NodeDetails = ({ items = [], handleResourceSelect }) => {
     };
 
     window.addEventListener('navigateToPodDetails', handleNavigateToPodDetails);
-    
+
     return () => {
       window.removeEventListener('navigateToPodDetails', handleNavigateToPodDetails);
     };
@@ -112,19 +112,19 @@ const NodeDetails = ({ items = [], handleResourceSelect }) => {
   useEffect(() => {
     const fetchNodePods = async () => {
       try {
-        const response = await fetch('http://localhost:8000/reports/node-pods');
+        const response = await fetch('https://ceb.tech-sphere.pro/reports/node-pods');
         if (!response.ok) {
           throw new Error(`Failed to fetch node pods: ${response.statusText}`);
         }
-        
+
         const data = await response.json();
-        
+
         // Create a map of node names to pod counts
         const podCounts = {};
         Object.entries(data).forEach(([nodeName, pods]) => {
           podCounts[nodeName] = pods.length;
         });
-        
+
         setNodePodCounts(podCounts);
       } catch (err) {
         console.error('Error fetching node pods:', err);

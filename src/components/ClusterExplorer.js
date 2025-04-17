@@ -270,7 +270,7 @@ const ClusterExplorer = () => {
                 })
             };
 
-            const response = await fetch('http://localhost:8000/cluster/snapshot', {
+            const response = await fetch('https://ceb.tech-sphere.pro/cluster/snapshot', {
                 method: 'post',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(payload)
@@ -346,7 +346,7 @@ const ClusterExplorer = () => {
         try {
             const clusterInfo = getClusterDetails(selectedCluster);
             const region = clusterInfo?.region || 'US';
-            let url = `http://localhost:8000/cluster/snapshot/raw?cluster_id=${selectedCluster}&region=${region}`;
+            let url = `https://ceb.tech-sphere.pro/cluster/snapshot/raw?cluster_id=${selectedCluster}&region=${region}`;
 
             if (!useLatestSnapshot) {
                 url += `&date=${encodeURIComponent(selectedDateTime)}Z`;
@@ -383,7 +383,7 @@ const ClusterExplorer = () => {
 
         try {
             console.log("Calling events endpoint...");
-            const response = await fetch('http://localhost:8000/resources/events');
+            const response = await fetch('https://ceb.tech-sphere.pro/resources/events');
             console.log("Response status:", response.status);
 
             if (!response.ok) {
@@ -429,7 +429,7 @@ const ClusterExplorer = () => {
         setIsAnalyzing(true);
         try {
             // Fetch from the backend API
-            const response = await fetch(`http://localhost:8000/reports/best-practices-analysis`);
+            const response = await fetch(`https://ceb.tech-sphere.pro/reports/best-practices-analysis`);
 
             if (response.ok) {
                 const data = await response.json();
@@ -471,7 +471,7 @@ const ClusterExplorer = () => {
 
 	    console.log('Auto-loading snapshot from URL parameters:', snapshotRequest);
 
-	    fetch(`http://localhost:8000/cluster/snapshot`, {
+	    fetch(`https://ceb.tech-sphere.pro/cluster/snapshot`, {
 	      method: 'POST',
 	      headers: {
 	        'Content-Type': 'application/json',
@@ -572,7 +572,7 @@ const ClusterExplorer = () => {
         try {
             console.log(`[DEBUG] Fetching ${normalizedResourceType} details...`);
 
-            const response = await fetch(`http://localhost:8000/resources/${normalizedResourceType}`);
+            const response = await fetch(`https://ceb.tech-sphere.pro/resources/${normalizedResourceType}`);
 
             if (!response.ok) {
                 const errorText = await response.text();

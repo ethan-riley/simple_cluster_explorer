@@ -323,14 +323,14 @@ export const NodePodsTable = ({ node }) => {
 
       try {
         // Fetch the node pods report
-        const response = await fetch('http://localhost:8000/reports/node-pods');
-        
+        const response = await fetch('https://ceb.tech-sphere.pro/reports/node-pods');
+
         if (!response.ok) {
           throw new Error(`Failed to fetch node pods: ${response.statusText}`);
         }
-        
+
         const data = await response.json();
-        
+
         // Get pods for this specific node
         const podsForNode = data[node.metadata.name] || [];
         setPods(podsForNode);
@@ -379,7 +379,7 @@ export const NodePodsTable = ({ node }) => {
     // Navigate to pod details view
     // This would be implemented based on your app's routing mechanism
     // For now, we'll open a search for this pod in the resource search
-    window.dispatchEvent(new CustomEvent('navigateToPodDetails', { 
+    window.dispatchEvent(new CustomEvent('navigateToPodDetails', {
       detail: { podName }
     }));
   };
@@ -439,12 +439,12 @@ export const NodePodsTable = ({ node }) => {
                 </td>
                 <td className="py-2 px-3">{pod.spec.containers.length}</td>
                 <td className="py-2 px-3">
-                  {new Date(pod.metadata.creationTimestamp).toLocaleDateString()} 
+                  {new Date(pod.metadata.creationTimestamp).toLocaleDateString()}
                   {' '}
                   {new Date(pod.metadata.creationTimestamp).toLocaleTimeString()}
                 </td>
                 <td className="py-2 px-3">
-                  <button 
+                  <button
                     className="text-blue-500 hover:text-blue-700 flex items-center"
                     onClick={(e) => {
                       e.stopPropagation();

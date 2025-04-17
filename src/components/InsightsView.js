@@ -10,7 +10,7 @@ const InsightsView = ({ onResourceSelect }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [helmCharts, setHelmCharts] = useState({});
-    
+
     // SE Report states
     const [seReportResults, setSEReportResults] = useState(null);
     const [isSearching, setIsSearching] = useState(false);
@@ -28,26 +28,26 @@ const InsightsView = ({ onResourceSelect }) => {
         const fetchResources = async () => {
             try {
                 // Fetch deployments
-                const deploymentsResponse = await fetch('http://localhost:8000/resources/deployments');
+                const deploymentsResponse = await fetch('https://ceb.tech-sphere.pro/resources/deployments');
                 if (!deploymentsResponse.ok) {
                     throw new Error('Failed to fetch deployments');
                 }
                 const allDeployments = await deploymentsResponse.json();
-                
+
                 // Filter and categorize deployments
-                const admissionControllers = allDeployments.filter(deployment => 
+                const admissionControllers = allDeployments.filter(deployment =>
                     deployment.metadata.name.toLowerCase().includes('kyverno')
                 );
-                
-                const competition = allDeployments.filter(deployment => 
+
+                const competition = allDeployments.filter(deployment =>
                     deployment.metadata.name.toLowerCase().includes('karpenter') ||
                     deployment.metadata.name.toLowerCase().includes('scaleops')
                 );
 
-                const castai = allDeployments.filter(deployment => 
+                const castai = allDeployments.filter(deployment =>
                     deployment.metadata.namespace === 'castai-agent'
                 );
-                
+
                 setDeployments({
                     admissionControllers,
                     competition,
@@ -67,7 +67,7 @@ const InsightsView = ({ onResourceSelect }) => {
     useEffect(() => {
         const fetchHelmCharts = async () => {
             try {
-                const response = await fetch('http://localhost:8000/helm-charts');
+                const response = await fetch('https://ceb.tech-sphere.pro/helm-charts');
                 if (!response.ok) {
                     throw new Error('Failed to fetch Helm charts');
                 }
@@ -95,7 +95,7 @@ const InsightsView = ({ onResourceSelect }) => {
 
         try {
             // Get all PDBs
-            const pdbResponse = await fetch('http://localhost:8000/resources/poddisruptionbudgets');
+            const pdbResponse = await fetch('https://ceb.tech-sphere.pro/resources/poddisruptionbudgets');
             if (!pdbResponse.ok) {
                 throw new Error('Failed to fetch PDBs');
             }
@@ -106,7 +106,7 @@ const InsightsView = ({ onResourceSelect }) => {
                 const maxUnavailable = pdb.spec?.maxUnavailable;
                 const minAvailable = pdb.spec?.minAvailable;
                 const currentHealthy = pdb.status?.currentHealthy || 0;
-                
+
                 if (maxUnavailable === '0' || maxUnavailable === 0) return true;
                 if ((maxUnavailable === '1' || maxUnavailable === 1) && currentHealthy <= 1) return true;
                 if (typeof maxUnavailable === 'string' && maxUnavailable.endsWith('%')) {
@@ -133,11 +133,11 @@ const InsightsView = ({ onResourceSelect }) => {
 
             // Get all deployments, statefulsets, jobs, cronjobs, and daemonsets
             const [deploymentsResponse, statefulsetsResponse, jobsResponse, cronjobsResponse, daemonsetsResponse] = await Promise.all([
-                fetch('http://localhost:8000/resources/deployments'),
-                fetch('http://localhost:8000/resources/statefulsets'),
-                fetch('http://localhost:8000/resources/jobs'),
-                fetch('http://localhost:8000/resources/cronjobs'),
-                fetch('http://localhost:8000/resources/daemonsets')
+                fetch('https://ceb.tech-sphere.pro/resources/deployments'),
+                fetch('https://ceb.tech-sphere.pro/resources/statefulsets'),
+                fetch('https://ceb.tech-sphere.pro/resources/jobs'),
+                fetch('https://ceb.tech-sphere.pro/resources/cronjobs'),
+                fetch('https://ceb.tech-sphere.pro/resources/daemonsets')
             ]);
 
             if (!deploymentsResponse.ok || !statefulsetsResponse.ok || !jobsResponse.ok || !cronjobsResponse.ok || !daemonsetsResponse.ok) {
@@ -193,7 +193,7 @@ const InsightsView = ({ onResourceSelect }) => {
                 .filter(workload => {
                     const constraints = workload.spec?.template?.spec?.topologySpreadConstraints;
                     if (!constraints) return false;
-                    const hasHostnameTopologyWithDoNotSchedule = constraints.some(constraint => 
+                    const hasHostnameTopologyWithDoNotSchedule = constraints.some(constraint =>
                         constraint.topologyKey === 'kubernetes.io/hostname' &&
                         constraint.whenUnsatisfiable === 'DoNotSchedule'
                     );
@@ -254,21 +254,21 @@ const InsightsView = ({ onResourceSelect }) => {
             // Check Karpenter's batch duration settings
             if (parentName === 'karpenter') {
                 const containers = deployment.spec.template.spec.containers || [];
-                
+
                 console.log('Karpenter deployment found:', deployment.metadata.name);
                 console.log('Containers:', containers);
-                
+
                 // Check all containers for the environment variables
                 const hasIncorrectDurations = containers.some(container => {
                     if (!container.env) return false;
-                    
+
                     const maxDuration = container.env.find(env => env.name === 'BATCH_MAX_DURATION')?.value;
                     const idleDuration = container.env.find(env => env.name === 'BATCH_IDLE_DURATION')?.value;
 
-                    console.log('Container env check:', { 
+                    console.log('Container env check:', {
                         containerName: container.name,
-                        maxDuration, 
-                        idleDuration 
+                        maxDuration,
+                        idleDuration
                     });
 
                     return maxDuration !== '600s' || idleDuration !== '600s';
@@ -281,9 +281,9 @@ const InsightsView = ({ onResourceSelect }) => {
                         <div className="space-y-1">
                             <div className="flex items-start">
                                 <span className="text-yellow-500 mr-2">•</span>
-                                <a 
-                                    href="https://docs.cast.ai/docs/minimize-impact#use-karpenter-as-fallback-autoscaler" 
-                                    target="_blank" 
+                                <a
+                                    href="https://docs.cast.ai/docs/minimize-impact#use-karpenter-as-fallback-autoscaler"
+                                    target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-600 hover:text-blue-800 underline"
                                     onClick={(e) => e.stopPropagation()}
@@ -329,7 +329,7 @@ const InsightsView = ({ onResourceSelect }) => {
             componentName,
             helmChartData: helmCharts[componentName]
         });
-        
+
         // Directly access the array using componentName as key
         const chartArray = helmCharts[componentName];
         if (chartArray && chartArray.length > 0) {
@@ -550,7 +550,7 @@ const InsightsView = ({ onResourceSelect }) => {
                                                                     </span>
                                                                     <span className="text-xs px-2 py-0.5 rounded ml-2 bg-red-100 text-red-800">
                                                                         {workload.details?.spec?.replicas || 1} Replicas
-                                                                        {workload.details?.spec?.horizontalPodAutoscaler?.maxReplicas && 
+                                                                        {workload.details?.spec?.horizontalPodAutoscaler?.maxReplicas &&
                                                                             ` (HPA max: ${workload.details.spec.horizontalPodAutoscaler.maxReplicas})`
                                                                         }
                                                                     </span>
@@ -768,7 +768,7 @@ const InsightsView = ({ onResourceSelect }) => {
                                                                     </span>
                                                                     <span className="text-xs px-2 py-0.5 rounded ml-2 bg-red-100 text-red-800">
                                                                         {workload.details?.spec?.replicas || 1} Replicas
-                                                                        {workload.details?.spec?.horizontalPodAutoscaler?.maxReplicas && 
+                                                                        {workload.details?.spec?.horizontalPodAutoscaler?.maxReplicas &&
                                                                             ` (HPA max: ${workload.details.spec.horizontalPodAutoscaler.maxReplicas})`
                                                                         }
                                                                     </span>
@@ -821,7 +821,7 @@ const InsightsView = ({ onResourceSelect }) => {
                         <Cpu className="w-6 h-6 text-blue-500 mr-2" />
                         <h2 className="text-xl font-semibold text-gray-800">Cast AI</h2>
                     </div>
-                    
+
                     <div className="space-y-4">
                         {deployments.castai.map((deployment) => {
                             const isRunning = deployment.status.availableReplicas === deployment.spec.replicas;
@@ -831,8 +831,8 @@ const InsightsView = ({ onResourceSelect }) => {
                                 helmInfo
                             });
                             return (
-                                <div 
-                                    key={deployment.metadata.name} 
+                                <div
+                                    key={deployment.metadata.name}
                                     className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                                     onClick={() => handleGroupClick(deployment.metadata.name)}
                                 >
@@ -876,11 +876,11 @@ const InsightsView = ({ onResourceSelect }) => {
                             <Package className="w-6 h-6 text-gray-600 mr-2" />
                             <h2 className="text-xl font-semibold text-gray-800">3rd Party</h2>
                         </div>
-                        
+
                         <div className="space-y-4">
                             {Object.values(groupedCompetition).map((group) => (
-                                <div 
-                                    key={group.name} 
+                                <div
+                                    key={group.name}
                                     className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                                     onClick={() => handleGroupClick(group.name)}
                                 >
@@ -924,11 +924,11 @@ const InsightsView = ({ onResourceSelect }) => {
                             <Octagon className="w-6 h-6 text-red-500 mr-2" />
                             <h2 className="text-xl font-semibold text-gray-800">3rd Party Webhooks</h2>
                         </div>
-                        
+
                         <div className="space-y-4">
                             {Object.values(groupedAdmissionControllers).map((group) => (
-                                <div 
-                                    key={group.name} 
+                                <div
+                                    key={group.name}
                                     className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                                     onClick={() => handleGroupClick(group.name)}
                                 >
@@ -961,4 +961,4 @@ const InsightsView = ({ onResourceSelect }) => {
     );
 };
 
-export default InsightsView; 
+export default InsightsView;

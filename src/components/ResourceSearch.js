@@ -17,20 +17,20 @@ const tooltipStyles = `
   .tooltip-container {
     position: relative;
   }
-  
+
   .tooltip {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     white-space: normal;
   }
-  
+
   /* Default position (above) */
   .tooltip-container .tooltip {
     bottom: 100%;
     margin-bottom: 5px;
   }
-  
+
   /* Tooltip positioned below the element */
   .tooltip-container .tooltip.tooltip-bottom {
     bottom: auto;
@@ -319,7 +319,7 @@ const ResourceSearch = ({onResultClick}) => {
             }
 
             // Get the resource details
-            const detailsKey = result.namespace 
+            const detailsKey = result.namespace
                 ? `${result.kind}-${result.namespace}-${result.name}`
                 : `${result.kind}-${result.name}`;
             const details = resourceDetails[detailsKey];
@@ -337,10 +337,10 @@ const ResourceSearch = ({onResultClick}) => {
                 });
 
                 const affinity = details.spec?.template?.spec?.affinity || details.spec?.affinity;
-                
+
                 // Debug log the found affinity
                 console.log('Found affinity:', affinity);
-                
+
                 return affinity;
             };
 
@@ -367,7 +367,7 @@ const ResourceSearch = ({onResultClick}) => {
             }
 
             if (activeFilters.doNotScheduleTopology && result.components.includes('topologySpreadConstraints')) {
-                const constraints = details.spec?.template?.spec?.topologySpreadConstraints || 
+                const constraints = details.spec?.template?.spec?.topologySpreadConstraints ||
                                   details.spec?.topologySpreadConstraints;
                 if (!constraints?.some(c => c.whenUnsatisfiable === 'DoNotSchedule')) {
                     return false;
@@ -398,7 +398,7 @@ const ResourceSearch = ({onResultClick}) => {
         setResourceDetails({});
 
         try {
-            const response = await fetch('http://localhost:8000/resources/search', {
+            const response = await fetch('https://ceb.tech-sphere.pro/resources/search', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
@@ -419,25 +419,25 @@ const ResourceSearch = ({onResultClick}) => {
             // Fetch details for all results immediately
             const detailsPromises = results.matches.map(async result => {
                 const kind = result.kind?.toLowerCase() || '';
-                let resourceType = KIND_TO_RESOURCE_TYPE[kind] || 
-                                 KIND_TO_RESOURCE_TYPE[kind + 's'] || 
+                let resourceType = KIND_TO_RESOURCE_TYPE[kind] ||
+                                 KIND_TO_RESOURCE_TYPE[kind + 's'] ||
                                  kind + 's';
 
                 try {
-                    const response = await fetch(`http://localhost:8000/resources/${resourceType}`);
+                    const response = await fetch(`https://ceb.tech-sphere.pro/resources/${resourceType}`);
                     if (!response.ok) {
                         throw new Error(`Failed to fetch details for ${result.kind}`);
                     }
 
                     const resources = await response.json();
-                    const matchingResource = resources.find(r => 
-                        r.metadata.name === result.name && 
+                    const matchingResource = resources.find(r =>
+                        r.metadata.name === result.name &&
                         (!result.namespace || r.metadata.namespace === result.namespace)
                     );
 
                     if (matchingResource) {
                         // Use consistent key format: kind-name or kind-namespace-name
-                        const detailsKey = result.namespace 
+                        const detailsKey = result.namespace
                             ? `${result.kind}-${result.namespace}-${result.name}`
                             : `${result.kind}-${result.name}`;
 
@@ -480,7 +480,7 @@ const ResourceSearch = ({onResultClick}) => {
 
         try {
             // Call the backend API endpoint to generate the report
-            const response = await fetch('http://localhost:8000/resources/report', {
+            const response = await fetch('https://ceb.tech-sphere.pro/resources/report', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
@@ -609,7 +609,7 @@ const ResourceSearch = ({onResultClick}) => {
     const toggleResultExpanded = async (index, result) => {
         // Toggle the expanded state
         const newExpandedState = !expandedResults[index];
-        
+
         setExpandedResults(prev => ({
             ...prev,
             [index]: newExpandedState
@@ -685,10 +685,10 @@ const ResourceSearch = ({onResultClick}) => {
             });
 
             const affinity = details.spec?.template?.spec?.affinity || details.spec?.affinity;
-            
+
             // Debug log the found affinity
             console.log('Found affinity:', affinity);
-            
+
             return affinity;
         };
 
@@ -1007,7 +1007,7 @@ const ResourceSearch = ({onResultClick}) => {
                                     )}
 
                                     {/* If neither exists but affinityType is present */}
-                                    {!affinityType.requiredDuringSchedulingIgnoredDuringExecution && 
+                                    {!affinityType.requiredDuringSchedulingIgnoredDuringExecution &&
                                      (!affinityType.preferredDuringSchedulingIgnoredDuringExecution?.length) && (
                                         <div className="text-xs text-gray-600">
                                             Node affinity is defined but has no rules
@@ -1316,14 +1316,14 @@ const ResourceSearch = ({onResultClick}) => {
                             <div className="space-y-4">
                                 {selectedComponents.map(componentId => {
                                     const componentInfo = YAML_COMPONENTS.find(c => c.id === componentId);
-                                    const componentResults = filterResults(searchResults).matches.filter(result => 
+                                    const componentResults = filterResults(searchResults).matches.filter(result =>
                                         result.components.includes(componentId)
                                     );
 
                                     if (componentResults.length === 0) return null;
 
                                     const groupIndex = `${componentId}-group`;
-                                    
+
                                     return (
                                         <div key={componentId} className="bg-white rounded-md shadow-sm border overflow-hidden">
                                             {/* Component Group Header */}
@@ -1352,7 +1352,7 @@ const ResourceSearch = ({onResultClick}) => {
                                                     {componentResults.map((result, index) => {
                                                         const resultIndex = `${componentId}-${index}`;
                                                         // Use consistent key format: kind-name or kind-namespace-name
-                                                        const detailsKey = result.namespace 
+                                                        const detailsKey = result.namespace
                                                             ? `${result.kind}-${result.namespace}-${result.name}`
                                                             : `${result.kind}-${result.name}`;
 
