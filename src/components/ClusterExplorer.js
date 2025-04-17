@@ -147,6 +147,7 @@ const ClusterExplorer = () => {
         }
 
         // Fetch all data in parallel
+        console.log("Fetching cluster data with apiKey:", clusterDetails.apiKey);
         try {
             setIsLoadingProblematicNodes(true);
             setIsLoadingWorkloads(true);
@@ -155,7 +156,7 @@ const ClusterExplorer = () => {
             await Promise.all([
                 fetchProblematicNodes(
                     clusterId,
-                    clusterDetails.region || 'US',
+                    clusterDetails.region || 'US',                   
                     clusterDetails.apiKey
                 ).catch(err => {
                     console.error('Error fetching problematic nodes:', err);
