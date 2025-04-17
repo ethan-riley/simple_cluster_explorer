@@ -1,11 +1,13 @@
 // services/castApiService.js
+let API_BASE_URL = 'http://ceb.tech-sphere.pro';
+
 export const fetchProblematicNodes = async (clusterId, region, apiKey) => {
     if (!apiKey) {
         return null;
     }
 
     const response = await fetch(
-        `http://localhost:8000/clusters/${clusterId}/problematic-nodes?region=${region}&api_key=${apiKey}`,
+        `${API_BASE_URL}/clusters/${clusterId}/problematic-nodes?region=${region}&api_key=${apiKey}`,
         {
             headers: {
                 'accept': 'application/json'
@@ -27,7 +29,7 @@ export const fetchProblematicWorkloads = async (clusterId, region, apiKey, aggre
     }
 
     const response = await fetch(
-        `http://localhost:8000/clusters/${clusterId}/problematic-workloads?region=${region}&api_key=${apiKey}&aggressive_mode=${aggressiveMode}`,
+        `${API_BASE_URL}/clusters/${clusterId}/problematic-workloads?region=${region}&api_key=${apiKey}&aggressive_mode=${aggressiveMode}`,
         {
             headers: {
                 'accept': 'application/json'

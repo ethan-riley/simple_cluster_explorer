@@ -32,17 +32,6 @@ const apiService = {
         console.log(`Using cached snapshot for ${key}`);
         return this.snapshotCache[key];
       }
-      
-      // Build the API URL
-      let url = `http://localhost:8000/cluster/snapshot?cluster_id=${encodeURIComponent(clusterId)}&region=${encodeURIComponent(region)}`;
-      
-      if (date) {
-        url += `&date=${encodeURIComponent(date)}`;
-      }
-      
-      if (apiKey) {
-        url += `&api_key=${encodeURIComponent(apiKey)}`;
-      }
     
       // Make the API call
       const response = await fetch(`${API_BASE_URL}/cluster/snapshot`, {
