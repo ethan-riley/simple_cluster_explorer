@@ -1,228 +1,229 @@
 // src/components/SideMenu.jsx
 import React, { useState } from 'react';
 
-const SideMenu = ({ resourceCounts, onResourceClick, activeResource, activeSection }) => {
-  const [expandedSections, setExpandedSections] = useState({
-    cluster: true,
-    workloads: true,
-    autoscaling: true,
-    networking: true,
-    storage: true,
-    configuration: true,
-    security: true
-  });
-  
-  const toggleSection = (section) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
+const SideMenu = ({ resources, onResourceSelect, selectedResource }) => {
+  const [expandedGroups, setExpandedGroups] = useState({});
+
+  const toggleGroup = (groupName) => {
+      setExpandedGroups(prev => ({
+          ...prev,
+          [groupName]: !prev[groupName]
+      }));
   };
-  
-    // Helper to render a resource count item
-  const renderCountItem = (label, count, resourceType, section) => {
-    const isActive = activeResource === resourceType && activeSection === section;
-    
-    return (
-      <div 
-        className={`flex justify-between items-center py-3 px-4 border-b last:border-b-0 hover:bg-gray-100 cursor-pointer ${isActive ? 'bg-blue-50 border-l-4 border-blue-500' : ''}`}
-        onClick={() => onResourceClick(resourceType, section)}
-      >
-        <span className={isActive ? 'font-medium text-blue-700' : ''}>{label}</span>
-        <span className={`px-2 py-1 rounded-full text-sm ${isActive ? 'bg-blue-200 text-blue-800' : 'bg-gray-200'}`}>{count || 0}</span>
-      </div>
-    );
-  };
-  
-  return (
-    <div className="space-y-4 h-full overflow-y-auto">
-      {/* Cluster Section */}
-      <div className="bg-white rounded shadow overflow-hidden">
-        <div 
-          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'cluster' ? 'bg-gray-100' : ''}`}
-          onClick={() => toggleSection('cluster')}
-          >
-          <h3 className="font-bold text-lg">Cluster</h3>
-          <svg 
-            className={`w-5 h-5 transform ${expandedSections.cluster ? 'rotate-180' : ''}`} 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </div>
-        {expandedSections.cluster && (
-          <div>
-            {renderCountItem('Nodes', resourceCounts.nodes, 'nodes', 'cluster')}
-            {renderCountItem('Namespaces', resourceCounts.namespaces, 'namespaces', 'cluster')}
-            {renderCountItem('Events', resourceCounts.events, 'events', 'cluster')}
-          </div>
-        )}
-      </div>
-      
-      {/* Workloads Section */}
-      <div className="bg-white rounded shadow overflow-hidden">
-        <div 
-          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'workloads' ? 'bg-gray-100' : ''}`}
-          onClick={() => toggleSection('workloads')}
-          >
-          <h3 className="font-bold text-lg">Workloads</h3>
-          <svg 
-            className={`w-5 h-5 transform ${expandedSections.workloads ? 'rotate-180' : ''}`} 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </div>
-        {expandedSections.workloads && (
-          <div>
-            {renderCountItem('Pods', resourceCounts.pods, 'pods', 'workloads')}
-            {renderCountItem('Deployments', resourceCounts.deployments, 'deployments', 'workloads')}
-            {renderCountItem('Stateful Sets', resourceCounts.statefulsets, 'statefulsets', 'workloads')}
-            {renderCountItem('Daemon Sets', resourceCounts.daemonsets, 'daemonsets', 'workloads')}
-            {renderCountItem('Jobs', resourceCounts.jobs, 'jobs', 'workloads')}
-            {renderCountItem('Replica Sets', resourceCounts.replicasets, 'replicasets', 'workloads')}
-            {renderCountItem('Rollouts', resourceCounts.rollouts, 'rollouts', 'workloads')}
-          </div>
-        )}
-      </div>
-      
-      {/* Autoscaling Section */}
-      <div className="bg-white rounded shadow overflow-hidden">
-        <div 
-          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'autoscaling' ? 'bg-gray-100' : ''}`}
-          onClick={() => toggleSection('autoscaling')}
-          >
-          <h3 className="font-bold text-lg">Autoscaling</h3>
-          <svg 
-            className={`w-5 h-5 transform ${expandedSections.autoscaling ? 'rotate-180' : ''}`} 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </div>
-        {expandedSections.autoscaling && (
-          <div>
-            {renderCountItem('Horizontal Pod Autoscalers', resourceCounts.horizontalpodautoscalers, 'horizontalpodautoscalers', 'autoscaling')}
-            {renderCountItem('Pod Disruption Budgets', resourceCounts.poddisruptionbudgets, 'poddisruptionbudgets', 'autoscaling')}
-            {renderCountItem('WOOP', resourceCounts.woop, 'woop', 'autoscaling')}
-          </div>
-        )}
-      </div>
-      
-      {/* Service & Networking Section */}
-      <div className="bg-white rounded shadow overflow-hidden">
-        <div 
-          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'networking' ? 'bg-gray-100' : ''}`}
-          onClick={() => toggleSection('networking')}
-          >
-          <h3 className="font-bold text-lg">Service & Networking</h3>
-          <svg 
-            className={`w-5 h-5 transform ${expandedSections.networking ? 'rotate-180' : ''}`} 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </div>
-        {expandedSections.networking && (
-          <div>
-            {renderCountItem('Services', resourceCounts.services, 'services', 'networking')}
-            {renderCountItem('Ingresses', resourceCounts.ingresses, 'ingresses', 'networking')}
-            {renderCountItem('Network Policies', resourceCounts.networkpolicies, 'networkpolicies', 'networking')}
-          </div>
-        )}
-      </div>
-      
-      {/* Storage Section */}
-      <div className="bg-white rounded shadow overflow-hidden">
-        <div 
-          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'storage' ? 'bg-gray-100' : ''}`}
-          onClick={() => toggleSection('storage')}
-          >
-          <h3 className="font-bold text-lg">Storage</h3>
-          <svg 
-            className={`w-5 h-5 transform ${expandedSections.storage ? 'rotate-180' : ''}`} 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </div>
-        {expandedSections.storage && (
-          <div>
-            {renderCountItem('Persistent Volumes', resourceCounts.persistentvolumes, 'persistentvolumes', 'storage')}
-            {renderCountItem('Persistent Volume Claims', resourceCounts.persistentvolumeclaims, 'persistentvolumeclaims', 'storage')}
-            {renderCountItem('Storage Classes', resourceCounts.storageclasses, 'storageclasses', 'storage')}
-            {renderCountItem('CSI Nodes', resourceCounts.csinodes, 'csinodes', 'storage')}
-          </div>
-        )}
-      </div>
-      
-      {/* Configuration Section */}
-      <div className="bg-white rounded shadow overflow-hidden">
-        <div 
-          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'configuration' ? 'bg-gray-100' : ''}`}
-          onClick={() => toggleSection('configuration')}
-          >
-          <h3 className="font-bold text-lg">Configuration</h3>
-          <svg 
-            className={`w-5 h-5 transform ${expandedSections.configuration ? 'rotate-180' : ''}`} 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </div>
-        {expandedSections.configuration && (
-          <div>
-            {renderCountItem('Config Maps', resourceCounts.configmaps, 'configmaps', 'configuration')}
-          </div>
-        )}
-      </div>
-      
-      {/* Security Section */}
-      <div className="bg-white rounded shadow overflow-hidden">
-        <div 
-          className={`flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 ${activeSection === 'security' ? 'bg-gray-100' : ''}`}
-          onClick={() => toggleSection('security')}
-          >
-          <h3 className="font-bold text-lg">Security</h3>
-          <svg 
-            className={`w-5 h-5 transform ${expandedSections.security ? 'rotate-180' : ''}`} 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </div>
-        {expandedSections.security && (
-          <div>
-            {renderCountItem('Roles', resourceCounts.roles, 'roles', 'security')}
-            {renderCountItem('Role Bindings', resourceCounts.rolebindings, 'rolebindings', 'security')}
-            {renderCountItem('Cluster Roles', resourceCounts.clusterroles, 'clusterroles', 'security')}
-            {renderCountItem('Cluster Role Bindings', resourceCounts.clusterrolebindings, 'clusterrolebindings', 'security')}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+
+  const formatTypeName = (typeName) => {
+    // Special cases
+    if (typeName.toLowerCase() === 'resourcesearch') {
+        return 'Resource Search';
+    }
+
+    if (typeName.toLowerCase() === 'overview') {
+        return 'Overview';
+    }
+
+    if (typeName.toLowerCase() === 'insights') {
+        return 'Insights';
+    }
+
+    // Handle known compound words with custom formatting
+    const specialCases = {
+        'csinodes': 'CSI Nodes',
+        'horizontalpodautoscalers': 'Horizontal Pod Autoscalers',
+        'poddisruptionbudgets': 'Pod Disruption Budgets',
+        'persistentvolumes': 'Persistent Volumes',
+        'persistentvolumeclaims': 'Persistent Volume Claims',
+        'configmaps': 'Config Maps',
+        'daemonsets': 'Daemon Sets',
+        'replicasets': 'Replica Sets',
+        'statefulsets': 'Stateful Sets',
+        'replicationcontrollers': 'Replication Controllers',
+        'networkpolicies': 'Network Policies',
+        'clusterroles': 'Cluster Roles',
+        'clusterrolebindings': 'Cluster Role Bindings',
+        'rolebindings': 'Role Bindings',
+        'storageclasses': 'Storage Classes',
+        'podmetrics': 'Pod Metrics',
+        'woop': 'WOOP'
+    };
+
+    // Check if it's a special case
+    const normalizedType = typeName.toLowerCase();
+    if (specialCases[normalizedType]) {
+        return specialCases[normalizedType];
+    }
+
+    // Otherwise split by camelCase and capitalize first letter of each word
+    return typeName
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .split(/[^a-zA-Z0-9]+/)
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
 };
 
+const resourceGroups = {
+    'Cluster': ['nodes', 'namespaces', 'events'],
+    'Workloads': ['pods', 'deployments', 'statefulsets', 'daemonsets', 'jobs', 'replicasets', 'rollouts'],
+    'Autoscaling': ['horizontalpodautoscalers', 'poddisruptionbudgets', 'woop'],
+    'Service & Networking': ['services', 'ingresses', 'networkpolicies'],
+    'Storage': ['persistentvolumes', 'persistentvolumeclaims', 'storageclasses', 'csinodes'],
+    'Configuration': ['configmaps', 'secrets'],
+    'Security': ['roles', 'rolebindings', 'clusterroles', 'clusterrolebindings']
+};
+
+const ResourceItem = ({ type, count }) => {
+    const isSelected = selectedResource === type;
+    return (
+        <div
+            className={`pl-4 py-2 cursor-pointer hover:bg-gray-100 rounded text-sm ${isSelected ? 'bg-blue-50 text-blue-700' : ''}`}
+            onClick={() => onResourceSelect(type)}
+        >
+            <div className="flex items-center justify-between gap-4">
+                <span className="truncate">{formatTypeName(type)}</span>
+                {count !== undefined && (
+                    <span className={`text-xs whitespace-nowrap px-3 py-0.5 rounded-full mr-2 ${isSelected ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
+                        {count}
+                    </span>
+                )}
+            </div>
+        </div>
+    );
+};
+
+const LoadingSkeleton = () => (
+    <div className="space-y-2">
+        {/* Overview and Best Practices skeleton */}
+        <div className="border rounded-lg p-4 mb-4 bg-white animate-pulse">
+            <div className="flex items-center">
+                <div className="w-4 h-4 bg-gray-200 rounded mr-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-24"></div>
+            </div>
+        </div>
+
+        <div className="border rounded-lg p-4 mb-4 bg-white animate-pulse">
+            <div className="flex items-center">
+                <div className="w-4 h-4 bg-gray-200 rounded mr-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+            </div>
+        </div>
+
+        <div className="border rounded-lg p-4 mb-4 bg-white animate-pulse">
+            <div className="flex items-center">
+                <div className="w-4 h-4 bg-gray-200 rounded mr-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-20"></div>
+            </div>
+        </div>
+
+        <div className="border rounded-lg p-4 mb-4 bg-white animate-pulse">
+            <div className="flex items-center">
+                <div className="w-4 h-4 bg-gray-200 rounded mr-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-28"></div>
+            </div>
+        </div>
+
+        {/* Resource Groups skeleton */}
+        {Object.entries(resourceGroups).map(([groupName]) => (
+            <div key={groupName} className="border rounded-lg bg-white animate-pulse">
+                <div className="p-4 flex items-center justify-between">
+                    <div className="h-4 bg-gray-200 rounded w-24"></div>
+                    <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                </div>
+                <div className="border-t p-2">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="pl-4 py-2">
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="h-4 bg-gray-200 rounded w-32"></div>
+                                <div className="h-4 bg-gray-200 rounded w-8"></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        ))}
+    </div>
+);
+
+// Show loading skeleton when resources is null
+if (!resources) {
+    return <LoadingSkeleton />;
+}
+
+return (
+    <div className="space-y-2">
+        {/* Overview and Best Practices */}
+        <div
+            className={`border rounded-lg p-4 mb-4 bg-white cursor-pointer hover:bg-gray-50 transition-colors flex items-center ${!selectedResource ? 'bg-blue-50 text-blue-700' : ''}`}
+            onClick={() => onResourceSelect('overview')}
+        >
+            <LayoutGrid className={`w-4 h-4 mr-2 ${!selectedResource ? 'text-blue-500' : ''}`}/>
+            <span className="font-medium">Overview</span>
+        </div>
+
+        <div
+            className={`border rounded-lg p-4 mb-4 bg-white cursor-pointer hover:bg-gray-50 transition-colors flex items-center ${selectedResource === 'bestpractices' ? 'bg-blue-50 text-blue-700' : ''}`}
+            onClick={() => onResourceSelect('bestpractices')}
+        >
+            <CheckCircle className={`w-4 h-4 mr-2 ${selectedResource === 'bestpractices' ? 'text-blue-500' : 'text-blue-500'}`}/>
+            <span className="font-medium">Best Practices</span>
+        </div>
+
+        <div
+            className={`border rounded-lg p-4 mb-4 bg-white cursor-pointer hover:bg-gray-50 transition-colors flex items-center ${selectedResource === 'insights' ? 'bg-blue-50 text-blue-700' : ''}`}
+            onClick={() => onResourceSelect('insights')}
+        >
+            <Lightbulb className={`w-4 h-4 mr-2 ${selectedResource === 'insights' ? 'text-blue-500' : 'text-blue-500'}`}/>
+            <span className="font-medium">Insights</span>
+        </div>
+
+        {/* Resource Search */}
+        <div
+            className={`border rounded-lg p-4 mb-4 bg-white cursor-pointer hover:bg-gray-50 transition-colors flex items-center ${selectedResource === 'resourcesearch' ? 'bg-blue-50 text-blue-700' : ''}`}
+            onClick={() => onResourceSelect('resourcesearch')}
+        >
+            <Search className={`w-4 h-4 mr-2 ${selectedResource === 'resourcesearch' ? 'text-blue-500' : ''}`}/>
+            <span className="font-medium">Resource Search</span>
+        </div>
+
+        {/* Resource Groups */}
+        {Object.entries(resourceGroups).map(([groupName, resourceTypes]) => {
+            const hasResources = resourceTypes.some(type => resources && type in resources);
+            if (!hasResources) return null;
+
+            // Check if any resource in this group is selected
+            const hasSelectedResource = resourceTypes.includes(selectedResource);
+
+            return (
+                <div key={groupName} className={`border rounded-lg bg-white ${hasSelectedResource ? 'border-blue-200' : ''}`}>
+                    <div
+                        className={`p-4 cursor-pointer hover:bg-gray-50 flex items-center justify-between ${hasSelectedResource ? 'bg-blue-50' : ''}`}
+                        onClick={() => toggleGroup(groupName)}
+                    >
+                        <span className={`font-medium ${hasSelectedResource ? 'text-blue-700' : ''}`}>{groupName}</span>
+                        {expandedGroups[groupName] ? (
+                            <ChevronDown className={`w-4 h-4 ${hasSelectedResource ? 'text-blue-500' : ''}`} />
+                        ) : (
+                            <ChevronRight className={`w-4 h-4 ${hasSelectedResource ? 'text-blue-500' : ''}`} />
+                        )}
+                    </div>
+                    {expandedGroups[groupName] && (
+                        <div className="border-t">
+                            {resourceTypes.map(type => {
+                                if (resources && type in resources) {
+                                    return (
+                                        <ResourceItem
+                                            key={type}
+                                            type={type}
+                                            count={resources[type]}
+                                        />
+                                    );
+                                }
+                                return null;
+                            })}
+                        </div>
+                    )}
+                </div>
+            );
+        })}
+    </div>
+);
+};
 export default SideMenu;
